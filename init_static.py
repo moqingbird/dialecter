@@ -238,7 +238,7 @@ region_pubs[88] = {"_id": "/r/wales", "publication": "REDDIT", "region": "WAL","
 region_pubs[89] = {"_id": "/r/Wigan", "publication": "REDDIT", "region": "WIG","url":"/r/Wigan/new/.rss?sort=new"}
 region_pubs[90] = {"_id": "/r/york", "publication": "REDDIT", "region": "YORK","url":"/r/york/new/.rss?sort=new"}
 region_pubs[91] = {"_id": "/r/Yorkshire", "publication": "REDDIT", "region": "YRK","url":"/r/Yorkshire/new/.rss?sort=new"}
-region_pubs[91] = {"_id": "/r/bournemouth", "publication": "REDDIT", "region": "YRK","url":"/r/bournemouth/new/.rss?sort=new"}
+region_pubs[91] = {"_id": "/r/bournemouth", "publication": "REDDIT", "region": "BRNM","url":"/r/bournemouth/new/.rss?sort=new"}
 
 for i in region_pubs:
     db.region_pubs.save(region_pubs[i])
