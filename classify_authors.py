@@ -15,7 +15,7 @@ def get_region_tree(dbconnection,tree,parent=None):
         tree=get_region_tree(dbconnection,tree,region["_id"])
     return tree
                         
-connection=MongoClient('192.168.153.128',27017);
+connection=MongoClient('cdgmongoserver.chickenkiller.com',27017);
 db=connection.dialect_db
 pubgroup=PubGroup.load("REDDIT",connection)
 pubgroup.loadAuthors()

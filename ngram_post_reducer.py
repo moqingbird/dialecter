@@ -13,14 +13,8 @@ def reducer(key, values):
   _count = 0
   try:
     for v in values:
-        if "region_pub" in key:
-            _counts = [_counts[i]+v["k_groups"][i] for i in range(0,k)]
-        else:
-            _count += 1
-    if "region_pub" in key:
-        return {'_id': key,'totals':  _counts}
-    else:
-        return {'_id': key,'total':  _count}
+        _count += 1
+    return {'_id': key,'total':  _count}
   except:
     print >> sys.stderr, "Unexpected reduce error " 
     traceback.print_exc()

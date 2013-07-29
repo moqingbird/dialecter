@@ -26,7 +26,7 @@ emoticon=""
 emoticon_token=" [[EMOTICON]]" 
 min_words=10
 #
-efile=codecs.open("C:\\Users\\Catherine\\Documents\\Birkbeck\\Project\\wikipedia_emoticons.csv",encoding="utf-8")
+efile=codecs.open("wikipedia_emoticons.csv",encoding="utf-8")
 for line in efile:
     tmp=line.replace("\r\n","")
     tmp=line.replace("\r","")
@@ -34,7 +34,7 @@ for line in efile:
     icon=re.sub("(?P<esc>[.\\\*+^?{}\[\]|()])","\\ \g<esc>",line.replace("\r\n","").strip())
     emoticon+=icon+"|"
 emoticon="[^\w]?("+emoticon.rstrip("|").replace("\\ ","\\")+")"
-connection=MongoClient('192.168.153.128',27017)
+connection=MongoClient('cdgmongoserver.chickenkiller.com',27017)
 db=connection.dialect_db
 cursor=db.posts.find()#{"_id": "http://www.reddit.com/r/bournemouth/comments/100yz1/i_want_a_cineworld_in_bournemouth/c69wlpd"})
 posts=cursor[:]
@@ -68,7 +68,7 @@ for post in posts:
         else:
             k_group=random.randint(0,9)
     db.posts.save({"_id":post["_id"],
-                   "publication":post["publication"],
+                   "region_pub":post["region_pub"],
                    "author":post["author"],
                    "content":post["content"],
                    "clean_text":cleaned,

@@ -10,6 +10,7 @@ from datetime import timedelta
 from xml.dom import minidom
 from BeautifulSoup import BeautifulSoup
 from PubGroup import PubGroup
+from Author import Author
 
 pubgroups={}
 
@@ -45,7 +46,7 @@ class PubCrawler:
         self.timeformat="%a, %d %b %Y %H:%M:%S"
         self.exit=False 
         self.connection=dbconnection
-        #dbconnection=MongoClient('192.168.153.128',27017)   
+        #dbconnection=MongoClient('cdgmongoserver.chickenkiller.com',27017)   
         db=dbconnection.dialect_db
         tmp=db.posts.find({"publication":id})
         for t in tmp:
@@ -53,6 +54,7 @@ class PubCrawler:
 
     def crawl(self,url,level):
         if self.pubgroup.allowed(url):
+            print(url)
             while self.pubgroup.lastcrawl + self.pubgroup.crawldelay > datetime.now():
                 None
             opener=PubUrlOpener()
@@ -77,7 +79,7 @@ class PubCrawler:
                         title=str(item.findAll("title")[0].contents[0])
                         author=title[0:title.find(" on ")].strip()
                         if not self.pubgroup.authors.has_key(author):
-                            self.pubgroup.authors[author]=Author(author,False,null,null)
+                            self.pubgroup.authors[author]=Author(author,False,None,None,None,None)
                         content=str(item.findAll("description")[0].contents[0])
                         content=content.replace('&amp;','&').replace('&lt;','<').replace('&gt;','>').replace('&quot;','"').replace('&#39;',"'");
                         if self.textitems.has_key(link) and self.textitems.get(link).saved:
@@ -95,8 +97,8 @@ class PubCrawler:
                 self.crawl(newUrl+"&after=t3_"+lastLink,level)
 
     def save(self):        
-        #connection = MongoClient('192.168.153.128',27017)
-        db=self.dbconnection.dialect_db
+        #connection = MongoClient('cdgmongoserver.chickenkiller.com',27017)
+        db=self.connection.dialect_db
         for k in self.pubgroup.authors.iterkeys():
             if not self.pubgroup.authors[k].saved:
                 db.authors.save({"_id":k,"pubgroup":self.pubgroup.id})
@@ -105,7 +107,7 @@ class PubCrawler:
             for key in self.textitems:
                 numItems=len(self.textitems)
                 if not self.textitems[key].saved:
-                    db.posts.save({"_id":self.textitems[key].id,"publication":self.id,"author":self.textitems[key].author,"content":self.textitems[key].content})
+                    db.posts.save({"_id":self.textitems[key].id,"region_pub":self.id,"author":self.textitems[key].author,"content":self.textitems[key].content})
         except: 
                 e = sys.exc_info()[1]
                 print( "Error: %s" % e )
@@ -114,7 +116,7 @@ class PubCrawler:
                 print(textitem.content[0:220])
 
 def main() :
-    connection=MongoClient('192.168.153.128',27017);
+    connection=MongoClient('cdgmongoserver.chickenkiller.com',27017);
     db=connection.dialect_db
     cursor=db.publications.find()
     pubCur=cursor[:]
@@ -122,15 +124,15 @@ def main() :
         pubgroups[pub["_id"]] = PubGroup(pub["_id"],pub["name"],pub["url"],1000,connection)
         if pub["read_robots"]:
             pubgroups[pub["_id"]].readrobots()
-        regionPubCur=db.region_pubs.find()
+        regionPubCur=db.region_pubs.find({"publication":pub["_id"]})
         for regionPub in regionPubCur:
+            print("rpub: "+regionPub["_id"])
             pubcrawler = PubCrawler(regionPub["_id"], regionPub["region"], regionPub["_id"], pubgroups[pub["_id"]], connection)
             url=pub["url"]+regionPub["_id"]+"/.rss?sort=new"
             pubcrawler.crawl(url,0)
             pubcrawler.save()
             
     print("done")
-    var = input()
 
 if __name__ == "__main__":
     main()

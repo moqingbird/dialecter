@@ -1,25 +1,27 @@
 import pymongo
 from pymongo import MongoClient
 
-connection=MongoClient('192.168.153.128',27017);
+connection=MongoClient('cdgmongoserver.chickenkiller.com',27017);
 db=connection.dialect_db
+db.parameters.save({"name":"n", "value":3})
+db.parameters.save({"name":"k", "value":10})
 publications={}
 
 publications[1]={"_id":"REDDIT","name":"Reddit","url":"http://www.reddit.com","read_robots":False}
 db.publications.save(publications[1])
 
 regions={}
-regions[1]={"_id":"BRI","name:":"British Isles"}
-regions[2]={"_id":"GBR","name:":"Great Britain","parent_id":"BRI"}
-regions[3]={"_id":"ENG","name:":"England", "parent_id":"GBR"}
-regions[4]={"_id":"SCO","name:":"Scotland", "parent_id":"GBR"}
-regions[5]={"_id":"WAL","name:":"Wales", "parent_id":"GBR"}
-regions[6]={"_id":"IRE","name:":"Ireland", "parent_id":"BRI"}
-regions[7]={"_id":"NI","name:":"Northern Ireland", "parent_id":"IRE"}
-regions[8]={"_id":"EIRE","name:":"Irish Republic", "parent_id":"IRE"}
-regions[9]={"_id":"CHI","name:":"Channel Islands", "parent_id":"BRI"}
-regions[10]={"_id":"JER","name:":"Jersey", "parent_id":"CHI"}
-regions[11]={"_id":"GUER","name:":"Guernsey", "parent_id":"CHI"}
+regions[1]={"_id":"BRI","name":"British Isles"}
+regions[2]={"_id":"GBR","name":"Great Britain","parent_id":"BRI"}
+regions[3]={"_id":"ENG","name":"England", "parent_id":"GBR"}
+regions[4]={"_id":"SCO","name":"Scotland", "parent_id":"GBR"}
+regions[5]={"_id":"WAL","name":"Wales", "parent_id":"GBR"}
+regions[6]={"_id":"IRE","name":"Ireland", "parent_id":"BRI"}
+regions[7]={"_id":"NI","name":"Northern Ireland", "parent_id":"IRE"}
+regions[8]={"_id":"EIRE","name":"Irish Republic", "parent_id":"IRE"}
+regions[9]={"_id":"CHI","name":"Channel Islands", "parent_id":"BRI"}
+regions[10]={"_id":"JER","name":"Jersey", "parent_id":"CHI"}
+regions[11]={"_id":"GUER","name":"Guernsey", "parent_id":"CHI"}
 regions[12] = {"_id": "HI_SCO","name": "Highlands","parent_id": "SCO"}
 regions[13] = {"_id": "SCI","name": "Scottish Isles","parent_id": "HI"}
 regions[14] = {"_id": "ORK","name": "Orkney","parent_id": "SCI"}
@@ -158,11 +160,11 @@ region_pubs[10] = {"_id": "/r/brighton", "publication": "REDDIT", "region": "BRG
 region_pubs[11] = {"_id": "/r/bristol", "publication": "REDDIT", "region": "BRIS","url":"/r/bristol/new/.rss?sort=new"}
 region_pubs[12] = {"_id": "/r/canterbury", "publication": "REDDIT", "region": "CANT","url":"/r/canterbury/new/.rss?sort=new"}
 region_pubs[13] = {"_id": "/r/Cardiff", "publication": "REDDIT", "region": "CAR","url":"/r/Cardiff/new/.rss?sort=new"}
-region_pubs[14] = {"_id": "/r/channelislands ", "publication": "REDDIT", "region": "CHI","url":"/r/channelislands/new/.rss?sort=new"}
+region_pubs[14] = {"_id": "/r/channelislands", "publication": "REDDIT", "region": "CHI","url":"/r/channelislands/new/.rss?sort=new"}
 region_pubs[15] = {"_id": "/r/cheshire", "publication": "REDDIT", "region": "CHE","url":"/r/cheshire/new/.rss?sort=new"}
 region_pubs[16] = {"_id": "/r/chester", "publication": "REDDIT", "region": "CHES","url":"/r/chester/new/.rss?sort=new"}
-region_pubs[17] = {"_id": "/r/cork ", "publication": "REDDIT", "region": "COR","url":"/r/cork/new/.rss?sort=new"}
-region_pubs[18] = {"_id": "/r/cornwall", "publication": "REDDIT", "region": "CORN","url":"/r/cornwall/new/.rss?sort=new"}
+region_pubs[17] = {"_id": "/r/cork", "publication": "REDDIT", "region": "COR","url":"/r/cork/new/.rss?sort=new"}
+region_pubs[18] = {"_id": "/r/Cornwall", "publication": "REDDIT", "region": "CORN","url":"/r/Cornwall/new/.rss?sort=new"}
 region_pubs[19] = {"_id": "/r/Kernow", "publication": "REDDIT", "region": "CORN","url":"/r/Kernow/new/.rss?sort=new"}
 region_pubs[20] = {"_id": "/r/coventry", "publication": "REDDIT", "region": "COVN","url":"/r/coventry/new/.rss?sort=new"}
 region_pubs[21] = {"_id": "/r/cumbria", "publication": "REDDIT", "region": "CUMB","url":"/r/cumbria/new/.rss?sort=new"}
@@ -171,23 +173,23 @@ region_pubs[23] = {"_id": "/r/DerryLondonderry", "publication": "REDDIT", "regio
 region_pubs[24] = {"_id": "/r/devonuk", "publication": "REDDIT", "region": "DEV","url":"/r/devonuk/new/.rss?sort=new"}
 region_pubs[25] = {"_id": "/r/Donegal", "publication": "REDDIT", "region": "DON","url":"/r/Donegal/new/.rss?sort=new"}
 region_pubs[26] = {"_id": "/r/Dorset", "publication": "REDDIT", "region": "DORS","url":"/r/Dorset/new/.rss?sort=new"}
-region_pubs[27] = {"_id": "/r/dublin ", "publication": "REDDIT", "region": "DUB","url":"/r/dublin/new/.rss?sort=new"}
+region_pubs[27] = {"_id": "/r/Dublin", "publication": "REDDIT", "region": "DUB","url":"/r/Dublin/new/.rss?sort=new"}
 region_pubs[28] = {"_id": "/r/dundee", "publication": "REDDIT", "region": "DUND","url":"/r/dundee/new/.rss?sort=new"}
 region_pubs[29] = {"_id": "/r/EastAnglia", "publication": "REDDIT", "region": "EA_ANG","url":"/r/EastAnglia/new/.rss?sort=new"}
 region_pubs[30] = {"_id": "/r/eastkilbride", "publication": "REDDIT", "region": "EKIL","url":"/r/eastkilbride/new/.rss?sort=new"}
-region_pubs[31] = {"_id": "/r/edinburgh", "publication": "REDDIT", "region": "EDB","url":"/r/edinburgh/new/.rss?sort=new"}
+region_pubs[31] = {"_id": "/r/Edinburgh", "publication": "REDDIT", "region": "EDB","url":"/r/Edinburgh/new/.rss?sort=new"}
 region_pubs[32] = {"_id": "/r/midlands", "publication": "REDDIT", "region": "MID_ENG","url":"/r/midlands/new/.rss?sort=new"}
-region_pubs[33] = {"_id": "/r/essex", "publication": "REDDIT", "region": "ESX","url":"/r/essex/new/.rss?sort=new"}
+region_pubs[33] = {"_id": "/r/Essex", "publication": "REDDIT", "region": "ESX","url":"/r/Essex/new/.rss?sort=new"}
 region_pubs[34] = {"_id": "/r/Exeter", "publication": "REDDIT", "region": "EXE","url":"/r/Exteer/new/.rss?sort=new"}
 region_pubs[35] = {"_id": "/r/Falmouth", "publication": "REDDIT", "region": "FALM","url":"/r/Falmouth/new/.rss?sort=new"}
-region_pubs[36] = {"_id": "/r/galway ", "publication": "REDDIT", "region": "GAL","url":"/r/galway/new/.rss?sort=new"}
+region_pubs[36] = {"_id": "/r/galway", "publication": "REDDIT", "region": "GAL","url":"/r/galway/new/.rss?sort=new"}
 region_pubs[37] = {"_id": "/r/galwayevents", "publication": "REDDIT", "region": "GAL","url":"/r/galwayevents/new/.rss?sort=new"}
 region_pubs[38] = {"_id": "/r/glasgow", "publication": "REDDIT", "region": "GLAS","url":"/r/glasgow/new/.rss?sort=new"}
 region_pubs[39] = {"_id": "/r/gloucestershire", "publication": "REDDIT", "region": "GLOS","url":"/r/gloucestershire/new/.rss?sort=new"}
 region_pubs[40] = {"_id": "/r/Grimsby", "publication": "REDDIT", "region": "GRIM","url":"/r/Grimsby/new/.rss?sort=new"}
-region_pubs[41] = {"_id": "/r/guernsey ", "publication": "REDDIT", "region": "GUER","url":"/r/guernsey/new/.rss?sort=new"}
+region_pubs[41] = {"_id": "/r/guernsey", "publication": "REDDIT", "region": "GUER","url":"/r/guernsey/new/.rss?sort=new"}
 region_pubs[42] = {"_id": "/r/harrogate", "publication": "REDDIT", "region": "HARR","url":"/r/harrogate/new/.rss?sort=new"}
-region_pubs[43] = {"_id": "/r/hull", "publication": "REDDIT", "region": "HULL","url":"/r/hull/new/.rss?sort=new"}
+region_pubs[43] = {"_id": "/r/Hull", "publication": "REDDIT", "region": "HULL","url":"/r/Hull/new/.rss?sort=new"}
 region_pubs[44] = {"_id": "/r/inverness", "publication": "REDDIT", "region": "INV","url":"/r/inverness/new/.rss?sort=new"}
 region_pubs[45] = {"_id": "/r/IpswichUK", "publication": "REDDIT", "region": "IPS","url":"/r/IpswichUK/new/.rss?sort=new"}
 region_pubs[46] = {"_id": "/r/IsleofMan", "publication": "REDDIT", "region": "MANX","url":"/r/IsleofMan/new/.rss?sort=new"}
@@ -195,22 +197,22 @@ region_pubs[47] = {"_id": "/r/isleofwight", "publication": "REDDIT", "region": "
 region_pubs[48] = {"_id": "/r/BritishKent", "publication": "REDDIT", "region": "KENT","url":"/r/BritishKent/new/.rss?sort=new"}
 region_pubs[49] = {"_id": "/r/Thanet", "publication": "REDDIT", "region": "KENT","url":"/r/Thanet/new/.rss?sort=new"}
 region_pubs[50] = {"_id": "/r/lancaster_uk", "publication": "REDDIT", "region": "LANC","url":"/r/lancaster_uk/new/.rss?sort=new"}
-region_pubs[51] = {"_id": "/r/rug_leeds", "publication": "REDDIT", "region": "LEED","url":"/r/rug_leeds/new/.rss?sort=new"}
+region_pubs[51] = {"_id": "/r/RUG_leeds", "publication": "REDDIT", "region": "LEED","url":"/r/RUG_leeds/new/.rss?sort=new"}
 region_pubs[52] = {"_id": "/r/leicester", "publication": "REDDIT", "region": "LEIC","url":"/r/leicester/new/.rss?sort=new"}
 region_pubs[53] = {"_id": "/r/limerickcity", "publication": "REDDIT", "region": "LIM","url":"/r/limerickcity/new/.rss?sort=new"}
-region_pubs[54] = {"_id": "/r/lincolnshire", "publication": "REDDIT", "region": "LINC","url":"/r/lincolnshire/new/.rss?sort=new"}
-region_pubs[55] = {"_id": "/r/liverpool", "publication": "REDDIT", "region": "LVP","url":"/r/liverpool/new/.rss?sort=new"}
+region_pubs[54] = {"_id": "/r/Lincolnshire", "publication": "REDDIT", "region": "LINC","url":"/r/Lincolnshire/new/.rss?sort=new"}
+region_pubs[55] = {"_id": "/r/Liverpool", "publication": "REDDIT", "region": "LVP","url":"/r/Liverpool/new/.rss?sort=new"}
 region_pubs[56] = {"_id": "/r/manchester", "publication": "REDDIT", "region": "MANC","url":"/r/manchester/new/.rss?sort=new"}
 region_pubs[57] = {"_id": "/r/miltonkeynes", "publication": "REDDIT", "region": "MILK","url":"/r/miltonkeynes/new/.rss?sort=new"}
 region_pubs[58] = {"_id": "/r/NewcastleUponTyne", "publication": "REDDIT", "region": "NEWC","url":"/r/NewcastleUponTyne/new/.rss?sort=new"}
 region_pubs[59] = {"_id": "/r/northamptonians", "publication": "REDDIT", "region": "NHMP","url":"/r/northamptonians/new/.rss?sort=new"}
 region_pubs[60] = {"_id": "/r/northernireland", "publication": "REDDIT", "region": "NI","url":"/r/northernireland/new/.rss?sort=new"}
-region_pubs[61] = {"_id": "/r/norwich", "publication": "REDDIT", "region": "NORW","url":"/r/norwich/new/.rss?sort=new"}
+region_pubs[61] = {"_id": "/r/Norwich", "publication": "REDDIT", "region": "NORW","url":"/r/Norwich/new/.rss?sort=new"}
 region_pubs[62] = {"_id": "/r/nottingham", "publication": "REDDIT", "region": "NTHM","url":"/r/nottingham/new/.rss?sort=new"}
-region_pubs[63] = {"_id": "/r/orkney ", "publication": "REDDIT", "region": "ORK","url":"/r/orkney/new/.rss?sort=new"}
+region_pubs[63] = {"_id": "/r/orkney", "publication": "REDDIT", "region": "ORK","url":"/r/orkney/new/.rss?sort=new"}
 region_pubs[64] = {"_id": "/r/oxford", "publication": "REDDIT", "region": "OXF","url":"/r/oxford/new/.rss?sort=new"}
 region_pubs[65] = {"_id": "/r/poole", "publication": "REDDIT", "region": "POOL","url":"/r/poole/new/.rss?sort=new"}
-region_pubs[66] = {"_id": "/r/portsmouth", "publication": "REDDIT", "region": "PORT","url":"/r/portsmouth/new/.rss?sort=new"}
+region_pubs[66] = {"_id": "/r/Portsmouth", "publication": "REDDIT", "region": "PORT","url":"/r/Portsmouth/new/.rss?sort=new"}
 region_pubs[67] = {"_id": "/r/Preston", "publication": "REDDIT", "region": "PRES","url":"/r/Preston/new/.rss?sort=new"}
 region_pubs[68] = {"_id": "/r/Ramsgate", "publication": "REDDIT", "region": "RAMS","url":"/r/Ramsgate/new/.rss?sort=new"}
 region_pubs[69] = {"_id": "/r/Reading_Berkshire", "publication": "REDDIT", "region": "READ","url":"/r/Reading_Berkshire/new/.rss?sort=new"}
@@ -218,13 +220,13 @@ region_pubs[70] = {"_id": "/r/RofI", "publication": "REDDIT", "region": "EIRE","
 region_pubs[71] = {"_id": "/r/ireland", "publication": "REDDIT", "region": "EIRE","url":"/r/ireland/new/.rss?sort=new"}
 region_pubs[72] = {"_id": "/r/scotland", "publication": "REDDIT", "region": "SCO","url":"/r/scotland/new/.rss?sort=new"}
 region_pubs[73] = {"_id": "/r/Sheffield", "publication": "REDDIT", "region": "SHEF","url":"/r/Sheffield/new/.rss?sort=new"}
-region_pubs[74] = {"_id": "/r/shetland ", "publication": "REDDIT", "region": "SHET","url":"/r/shetland/new/.rss?sort=new"}
-region_pubs[75] = {"_id": "/r/shropshire", "publication": "REDDIT", "region": "SHROP","url":"/r/shropshire/new/.rss?sort=new"}
+region_pubs[74] = {"_id": "/r/shetland", "publication": "REDDIT", "region": "SHET","url":"/r/shetland/new/.rss?sort=new"}
+region_pubs[75] = {"_id": "/r/Shropshire", "publication": "REDDIT", "region": "SHROP","url":"/r/Shropshire/new/.rss?sort=new"}
 region_pubs[76] = {"_id": "/r/Sligo", "publication": "REDDIT", "region": "SLI","url":"/r/Sligo/new/.rss?sort=new"}
 region_pubs[77] = {"_id": "/r/SouthEast", "publication": "REDDIT", "region": "SE_IRE","url":"/r/SouthEast/new/.rss?sort=new"}
 region_pubs[78] = {"_id": "/r/SunnySoutheast", "publication": "REDDIT", "region": "SE_IRE","url":"/r/SunnySoutheast/new/.rss?sort=new"}
 region_pubs[79] = {"_id": "/r/southwales", "publication": "REDDIT", "region": "SO_WAL","url":"/r/southwales/new/.rss?sort=new"}
-region_pubs[80] = {"_id": "/r/southampton", "publication": "REDDIT", "region": "SOUTH","url":"/r/southampton/new/.rss?sort=new"}
+region_pubs[80] = {"_id": "/r/Southampton", "publication": "REDDIT", "region": "SOUTH","url":"/r/Southampton/new/.rss?sort=new"}
 region_pubs[81] = {"_id": "/r/standrews", "publication": "REDDIT", "region": "STAN","url":"/r/standrews/new/.rss?sort=new"}
 region_pubs[82] = {"_id": "/r/surrey", "publication": "REDDIT", "region": "SURY","url":"/r/surrey/new/.rss?sort=new"}
 region_pubs[83] = {"_id": "/r/swansea", "publication": "REDDIT", "region": "SWAN","url":"/r/swansea/new/.rss?sort=new"}

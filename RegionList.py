@@ -1,25 +1,27 @@
 from Region import Region
 import pymongo
+import sys
 from pymongo import MongoClient
 
 class RegionList:
     regions={}
 
-    def populate(self,recalc):
-        connection=MongoClient('192.168.153.128', 27017)
+    def populate(self,get_ngrams,check_exclude=False):
+        connection=MongoClient('cdgmongoserver.chickenkiller.com', 27017)
         db=connection.dialect_db
-        region_cur=db.regions.find({"word_counts": {"$gt":30000}})#{"$or":[{"_id":"ABN"},{"_id":"NI"},{"_id":"MANC"},{"_id":"BRIS"}]})
+        region_cur=db.regions.find()#{"$or":[{"_id":"ABN"},{"_id":"NI"},{"_id":"MANC"},{"_id":"BRIS"}]})
         regions=[region for region in region_cur]#region_cur[:]
         i=0
         for region in regions:
-            try:
-                ngram_counts=region["word_counts"]
-            except KeyError:
-                ngram_counts=None
-            self.regions[region["_id"]]=Region(region["_id"],region["name"],ngram_counts,i)
-            if ngram_counts!=None:
-                self.regions[region["_id"]].populateNgrams()
-            i+=1
+           if not check_exclude or region["exclude"]==False:
+              try:
+                  ngram_counts=region["word_counts"]
+              except KeyError:
+                  ngram_counts=None
+              self.regions[region["_id"]]=Region(region["_id"],region["name"],ngram_counts,i)
+              if ngram_counts!=None and get_ngrams == True:
+                  self.regions[region["_id"]].populateNgrams()
+              i+=1
 
     def get(self,index):
         return self.regions[index]

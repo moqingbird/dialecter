@@ -186,7 +186,7 @@ def main() :
 
     #withold=5;
     
-    connection=MongoClient("192.168.153.128",27017)
+    connection=MongoClient("cdgmongoserver.chickenkiller.com",27017)
     db=connection.dialect_db
    # populatePostCount(db)
     
