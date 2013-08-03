@@ -14,11 +14,9 @@ def reducer(key, values):
     print >> sys.stderr , "Start Reduce"
     rl=RegionList()
     rl.populate(False)
-    print >> sys.stderr , "Got region list"
     connection=MongoClient("cdgmongoserver.chickenkiller.com",27017)
     db=connection.dialect_db
     k=int(db.parameters.find_one({"name":"k"},{"_id":0,"value":1})["value"])
-    print >> sys.stderr , "Got k"
     connection.close()
     _counts  = [0 for i in range(0,len(rl.regions))]
     count=0

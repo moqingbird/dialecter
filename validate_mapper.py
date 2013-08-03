@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 import sys
+from datetime import datetime
+
 import traceback
 import pymongo
 sys.path.append(".")
@@ -13,7 +15,7 @@ from Post import Post
 def mapper(documents):
   try:    
     rl=RegionList()
-    rl.populate(False,True)
+    rl.populate(True,True)
     connection=MongoClient("cdgmongoserver.chickenkiller.com",27017)
     db=connection.dialect_db
     n=int(db.parameters.find_one({"name":"n"},{"_id":0,"value":1})["value"])
@@ -28,8 +30,14 @@ def mapper(documents):
     for doc in documents:
         if doc["exclude"]==False and rpub_regions.has_key(doc["region_pub"]):
            post=Post(doc["_id"],rpub_regions[doc["region_pub"]], doc["clean_text"],0.75,True)
-           print >> sys.stderr, doc["_id"]
-           post.calc(db,rl,n)
+           post.set_kgroup(doc["k_group"])
+           print >> sys.stderr, str(datetime.now()) + doc["_id"]
+           try:
+             post.calc(db,rl,n)
+           except:
+             print >> sys.stderr, doc["_id"]
+             raise
+           print >> sys.stderr, str(datetime.now())
            yield {'_id': {'k_group': doc["k_group"],
                           'region': post.regionId},
                  'max_region':post.maxRegion}
@@ -40,6 +48,11 @@ def mapper(documents):
 
 
 print >> sys.stderr, "Start Mapping"
-BSONMapper(mapper)
+try:
+  BSONMapper(mapper)
+except Exception, e:
+  print >> sys.stderr, "something went wrong"
+  print >> sys.stderr, e
+  raise
 print >> sys.stderr, "Done Mapping."
 

@@ -1,5 +1,6 @@
 import pymongo
 import math
+import sys
 from NGram import NGram
 from pymongo import MongoClient
 
@@ -135,10 +136,14 @@ class Region:
         try:
             return self.startsWith[start]
         except KeyError:
-            return [NGram("",0,0,0,False)]
+            return []
 
     def getLikelihood(self,ngram,k):
+      try:
         n=self.ngrams.get(ngram)
         if k==None:
           return n.total_likelihood
         return n.likelihoods[k]
+      except IndexError:
+         print >> sys.stderr, "r: "+self.id+", ngram: " + ngram+ ", k: "+str(k)
+         raise

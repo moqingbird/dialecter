@@ -1,10 +1,13 @@
 import math
 import pymongo
 from pymongo import MongoClient
+from datetime import datetime
+
+import sys
 
 def timeme(msg):
     None
-    #print(msg + " - " +str(datetime.now()))
+    #print >> sys.stderr, msg + " - " +str(datetime.now())
 
 class Post:
     def __init__(self,id,regionId,content,discount,testMode):
@@ -23,20 +26,23 @@ class Post:
 
     def __calcBeta__(self,rl,prevWords):
         timeme("sum slice")
-        t=rl.get(self.regionId).getStartsWith(prevWords)
-        return (1-sum([i.likelihood for i in rl.get(self.regionId).getStartsWith(prevWords)]))/ \
-               (1-sum([i.likelihood for i in rl.get(self.regionId).getStartsWith(prevWords[prevWords.find(" ")+1:])]))
+        return (1-sum([rl.get(self.regionId).getLikelihood(i, self.k_group) for i in rl.get(self.regionId).getStartsWith(prevWords)]))/ \
+               (1-sum([rl.get(self.regionId).getLikelihood(i, self.k_group) for i in rl.get(self.regionId).getStartsWith(prevWords[prevWords.find(" ")+1:])]))
 
     def __estLikelihood__(self,ngram,regionId,rl,words):
         likelihood=0
         try:
-            likelihood=rl.get(regionId).getLikelihood(ngram)
+            likelihood=rl.get(regionId).getLikelihood(ngram, self.k_group)
         except AttributeError:
             if words == 1:
+              try:
                 likelihood=math.log((1.0-self.discount)/float(rl.get(regionId).getCount(self.k_group)))
+              except ZeroDivisionError:
+                print >> sys.stderr, "post: "+self.id+", region: " +regionId+", k: "+ str(self.k_group)
+                raise
             else:
                 timeme("est -1")
-                el=self.__estLikelihood__(ngram[ngram.find(" ")+1:],regionId,rl,words-1,self.k_group)
+                el=self.__estLikelihood__(ngram[ngram.find(" ")+1:],regionId,rl,words-1)
                 timeme("set est")
                 likelihood=self.__calcBeta__(rl,ngram[:ngram.rfind(" ")]) * el
                 timeme("post set")
@@ -52,21 +58,31 @@ class Post:
         wrong=0
         global r3Wrong
 
-        post_ngram_cur=db.post_ngrams.find({"_id.post":self.id, "n":n})
+        timeme("get ngrams post: " + self.id + ", n: "+str(n))
+        post_ngram_cur=db.post_ngrams.find({"_id.post":self.id, "_id.n":n})
         post_ngrams=[ngram["_id"]["ngram"] for ngram in post_ngram_cur]
+        timeme("got ngrams")
 
         for r in rl.getKeys():
             self.regionLikelihoods[r]=0
+        timeme("init regionLikelihoods")
         for ngram in post_ngrams:
+            timeme(ngram)
             for r in rl.getKeys():
                 timeme("likelihood for r " + str(r))
                 self.regionLikelihoods[r]=self.regionLikelihoods[r]+self.__estLikelihood__(ngram,r,rl,n)
                 timeme("post likelihood")
+        timeme("done ngrams")
         if not self.testMode:
             for rn in self.regionLikelihoods.keys():
                 c.execute("insert into post_region (p_id, r_id, likelihood) values (%s,%s,%s)",(self.id, rn,self.regionLikelihoods[rn]));
         else:
+            timeme("get max")
             for l in self.regionLikelihoods.keys():
+                print >> sys.stderr, self.maxRegion
+                print >> sys.stderr, str(self.maxLikelihood)
+                print >> sys.stderr, l
+                print >> sys.stderr, str(self.regionLikelihoods[l])  
                 if self.maxLikelihood==None or self.regionLikelihoods[l] > self.maxLikelihood:
                     self.maxLikelihood=self.regionLikelihoods[l]
                     self.maxRegion=l
@@ -74,3 +90,4 @@ class Post:
                 correct=correct+1
             else:
                 wrong=wrong+1
+        timeme("maxRegion: "+self.maxRegion)
