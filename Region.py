@@ -49,6 +49,10 @@ class Region:
                 self.counts=[self.counts[i]+ngram["totals"][i] for i in range(0,self.k)]
                 self.total_count+=ngram["grand_total"]
 
+    def clearNgrams(self):
+        self.ngrams={}
+        self.startsWith={}
+
     def getCount(self,k):
         if k==None:
           return self.total_count
