@@ -7,8 +7,8 @@ from datetime import datetime
 import sys
 
 def timeme(msg):
-    #None
-    print >> sys.stderr, msg + " - " +str(datetime.now())
+    None
+    #print >> sys.stderr, msg + " - " +str(datetime.now())
 
 class Post:
     def __init__(self,id,regionId,content,discount,testMode):
