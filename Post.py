@@ -19,7 +19,7 @@ class Post:
         self.content=content
         self.testMode=testMode
         self.regionLikelihoods={}
-        self.maxRegion=0
+        self.maxRegion=None
         self.maxLikelihood=None
         self.discount=discount
         self.k_group=-1
@@ -27,8 +27,17 @@ class Post:
 
     def __calcAlpha__(self,region,prevWords):
         #timeme("sum slice")
-        return (1-sum([region.getLikelihood(i, self.k_group) for i in region.getStartsWith(prevWords)]))/ \
-               (1-sum([region.getLikelihood(i, self.k_group) for i in region.getStartsWith(prevWords[prevWords.find(" ")+1:])]))
+        starts_with=region.getStartsWith(prevWords)
+        if starts_with==None:
+            beta=1
+        else:
+            beta=1-sum([region.getLikelihood(i, self.k_group) for i in starts_with])
+        starts_with=region.getStartsWith(prevWords[prevWords.find(" ")+1:])
+        if starts_with==None:
+           normalise=1
+        else:
+           normalise=1-sum([region.getLikelihood(i, self.k_group) for i in starts_with])
+        return beta/normalise
 
     def __estLikelihood__(self,ngram,region,words):
         likelihood=0
@@ -88,4 +97,6 @@ class Post:
                 if self.regionLikelihoods[l] != 0 and (self.maxLikelihood==None or self.regionLikelihoods[l] > self.maxLikelihood):
                     self.maxLikelihood=self.regionLikelihoods[l]
                     self.maxRegion=l
+        if self.maxRegion==None:
+            self.maxRegion="None"
         timeme("maxRegion: "+self.maxRegion)

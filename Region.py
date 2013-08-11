@@ -163,6 +163,7 @@ class Region:
             return n.total_likelihood
           return n.likelihoods[k]
         else:
+          raise AttributeError
           return 0
       except IndexError:
         print >> sys.stderr, "r: "+self.id+", ngram: " + ngram+ ", k: "+str(k)
