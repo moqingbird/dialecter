@@ -3,9 +3,10 @@ import math
 import sys
 from NGram import NGram
 from pymongo import MongoClient
+from RegionNgramCache import RegionNgramCache
 
 class Region:
-    def __init__(self,id,name,counts,total_count,seq=0):
+    def __init__(self,id,name,counts,total_count,seq=0, use_cache=False):
         self.id=id
         self.name=name
         self.counts=counts
@@ -15,6 +16,10 @@ class Region:
         self.k=10
         self.startsWith={}
         self.seq=seq
+        self.use_cache=use_cache
+        self.cache=None
+        if use_cache:
+          self.cache=RegionNgramCache()
 
     def populateNgrams(self):        
         connection=MongoClient('cdgmongoserver.chickenkiller.com', 27017)
@@ -76,6 +81,7 @@ class Region:
     def calcLikelihoods(self,witholdFraction,witholdSeq,discount):        
         connection=MongoClient('cdgmongoserver.chickenkiller.com', 27017)
         db=connection.dialect_db
+        #n=db.parameters.find_one({"name":"n"})["value"]
         self.ngrams={}
         self.startsWith={}
         self.counts=[0 for i in range(0,self.k)]
@@ -107,11 +113,12 @@ class Region:
                             self.startsWith[ngram["_id"]["ngram"][:ngram["_id"]["ngram"].rfind(" ")]].append(ngram["_id"]["ngram"])
                     else:
                         self.counts=[self.counts[i]+ngram["totals"][i] for i in range(0,self.k)]
-                        self.total_count+=+ngram["grand_total"]
+                        self.total_count+=ngram["grand_total"]
             ngram_cur.close()
             ngrams=[]
         db.regions.update({"_id":self.id},
-                          {"$set":{"word_counts":self.counts, "total_count":self.total_count}})
+                          {"$set":{"word_counts":self.counts, 
+                                   "total_count":self.total_count}})
 
         for ngram in sorted(self.ngrams.iterkeys()):
             self.ngrams[ngram].likelihoods=[0 if self.ngrams[ngram].counts[i] == 0 
@@ -138,16 +145,25 @@ class Region:
 
     def getStartsWith(self,start):
         try:
+          if self.use_cache:
+             return self.cache.get_value(self, RegionNgramCache.STARTS_WITH, start)
+          else:
             return self.startsWith[start]
         except KeyError:
             return []
 
     def getLikelihood(self,ngram,k):
       try:
-        n=self.ngrams.get(ngram)
-        if k==None:
-          return n.total_likelihood
-        return n.likelihoods[k]
+        if self.use_cache:
+           n=self.cache.get_value(self, RegionNgramCache.NGRAM, ngram)
+        else:
+          n=self.ngrams.get(ngram)
+        if n!=None:
+          if k==None:
+            return n.total_likelihood
+          return n.likelihoods[k]
+        else:
+          return 0
       except IndexError:
-         print >> sys.stderr, "r: "+self.id+", ngram: " + ngram+ ", k: "+str(k)
-         raise
+        print >> sys.stderr, "r: "+self.id+", ngram: " + ngram+ ", k: "+str(k)
+        raise

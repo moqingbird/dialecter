@@ -48,10 +48,10 @@ for post in posts:
     else:
         cleaned=post["content"]
         cleaned=re.sub(square_brackets," ",cleaned) #do this first, before we insert any in the special tokens
+        cleaned=re.sub(url,url_token,cleaned)
         cleaned=re.sub(number,number_token,cleaned)
         cleaned=re.sub(currency,currency_token,cleaned)
         cleaned=re.sub(email,email_token,cleaned)
-        cleaned=re.sub(url,url_token,cleaned)
         cleaned=re.sub(emoticon,emoticon_token,cleaned)
         cleaned=re.sub(amp_escape,amp_token,cleaned) # must precent sentence_end otherwise we mis-handle the semicolons in these
         cleaned=re.sub(sentence_end,sentence_end_token,cleaned)

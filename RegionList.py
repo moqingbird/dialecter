@@ -6,7 +6,8 @@ from pymongo import MongoClient
 class RegionList:
     regions={}
 
-    def populate(self,get_ngrams,check_exclude=False):
+    def populate(self,get_ngrams,check_exclude=False,use_cache=False):
+        print("use cache? "+str(use_cache))
         connection=MongoClient('cdgmongoserver.chickenkiller.com', 27017)
         db=connection.dialect_db
         region_cur=db.regions.find()#{"$or":[{"_id":"ABN"},{"_id":"NI"},{"_id":"MANC"},{"_id":"BRIS"}]})
@@ -17,8 +18,17 @@ class RegionList:
               try:
                   ngram_counts=region["word_counts"]
               except KeyError:
-                  ngram_counts=None
-              self.regions[region["_id"]]=Region(region["_id"],region["name"],ngram_counts,i)
+                  ngram_counts=[]
+              try:
+                  total_count=region["total_count"]
+              except KeyError:
+                  total_count=None
+              self.regions[region["_id"]]=Region(region["_id"],
+                                                 region["name"],
+                                                 ngram_counts,
+                                                 total_count, 
+                                                 i, 
+                                                 use_cache)
               if ngram_counts!=None and get_ngrams == True:
                   self.regions[region["_id"]].populateNgrams()
               i+=1
