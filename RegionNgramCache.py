@@ -20,7 +20,7 @@ class RegionNgramCache:
       self.db=conn.dialect_db
       self.servers=[]
       self.server_count=0
-      server_file=open("memcached_servers.config")
+      server_file=open("/home/ubuntu/dev/dialecter/memcached_servers.config")
       for line in server_file:
         if not line.startswith("#"):
            self.servers.append(Client([line]))

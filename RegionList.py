@@ -7,7 +7,6 @@ class RegionList:
     regions={}
 
     def populate(self,get_ngrams,check_exclude=False,use_cache=False):
-        print("use cache? "+str(use_cache))
         connection=MongoClient('cdgmongoserver.chickenkiller.com', 27017)
         db=connection.dialect_db
         region_cur=db.regions.find()#{"$or":[{"_id":"ABN"},{"_id":"NI"},{"_id":"MANC"},{"_id":"BRIS"}]})

@@ -11,7 +11,7 @@ from RegionList import RegionList
 
 def reducer(key, values):
   try:
-    print >> sys.stderr , "Start Reduce"
+    print >> sys.stderr , "In  Reducer"
     rl=RegionList()
     rl.populate(False)
     connection=MongoClient("cdgmongoserver.chickenkiller.com",27017)

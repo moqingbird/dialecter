@@ -67,13 +67,10 @@ class Post:
         self.k_group = k 
 
     def calc(self,db,rl,n):       
-        print("start calc")
-
         timeme("get ngrams post: " + self.id + ", n: "+str(n))
         post_ngram_cur=db.post_ngrams.find({"_id.post":self.id, "_id.n":n})
         post_ngrams=[ngram["_id"]["ngram"] for ngram in post_ngram_cur]
         timeme("got ngrams")
-
         for r in rl.getKeys():
             self.regionLikelihoods[r]=0
         timeme("init regionLikelihoods")

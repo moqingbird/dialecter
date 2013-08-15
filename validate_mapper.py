@@ -15,7 +15,7 @@ from Post import Post
 def mapper(documents):
   try:    
     rl=RegionList()
-    rl.populate(False,True)
+    rl.populate(False,True,True)
     connection=MongoClient("cdgmongoserver.chickenkiller.com",27017)
     db=connection.dialect_db
     n=int(db.parameters.find_one({"name":"n"},{"_id":0,"value":1})["value"])

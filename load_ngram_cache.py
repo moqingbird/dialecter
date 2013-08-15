@@ -17,7 +17,7 @@ for region in regions:
      ngram_counts=region["word_counts"]
   except KeyError:
     ngram_counts=None
-  r=Region(region["_id"],region["name"],ngram_counts,0, None, 0,i,True)
+  r=Region(region["_id"],region["name"],ngram_counts,0,i,True)
   if ngram_counts!=None:
      r.populateNgrams()
   i+=1
