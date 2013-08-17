@@ -25,7 +25,6 @@ def mapper(documents):
     for rpub in rpub_cur:
       if rl.regions.has_key(rpub["region"]):
           rpub_regions[rpub["_id"]]=rpub["region"]
-    connection.close()
     count=0
     for doc in documents:
         if doc["exclude"]==False and rpub_regions.has_key(doc["region_pub"]):
@@ -38,6 +37,8 @@ def mapper(documents):
              print >> sys.stderr, doc["_id"]
              raise
            print >> sys.stderr, str(datetime.now())
+           if post.maxRegion != post.regionId:
+              db.wrong.save({"_id": post.id, "actual_region": post.regionId, "predicted_region": post.maxRegion})
            yield {'_id': {'k_group': doc["k_group"],
                           'region': post.regionId},
                  'max_region':post.maxRegion}
