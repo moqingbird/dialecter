@@ -3,6 +3,7 @@
 import sys
 import traceback
 
+import math
 import pymongo
 sys.path.append(".")
 from pymongo_hadoop import BSONReducer
