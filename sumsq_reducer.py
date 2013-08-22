@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 import sys
+import traceback
+
 import pymongo
 sys.path.append(".")
 from pymongo_hadoop import BSONReducer
