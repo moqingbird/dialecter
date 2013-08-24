@@ -23,7 +23,7 @@ def reducer(key, values):
     if count < stats["region_count"]:
        sum_sqr+=(stats["region_count"]-count) * pow(0-stats["mean"],2)
        
-    return {"_id":key, "sum_squares": sum_sqr, "std_dev": math.sqrt(sum_sqr/stats["region_count"])}
+    return {"_id":key, "sum_squares": sum_sqr, "variance": sum_sqr/stats["region_count"],"std_dev": math.sqrt(sum_sqr/stats["region_count"])}
   except:
     print >> sys.stderr, "Unexpected reduce error "
     traceback.print_exc()
