@@ -66,7 +66,7 @@ class Post:
     def set_kgroup(self, k):
         self.k_group = k 
 
-    def calc(self,db,rl,n):       
+    def calc(self,db,rl,n,debug_mode=False):       
         timeme("get ngrams post: " + self.id + ", n: "+str(n))
         post_ngram_cur=db.post_ngrams.find({"_id.post":self.id, "_id.n":n})
         post_ngrams=[ngram["_id"]["ngram"] for ngram in post_ngram_cur]
@@ -74,13 +74,26 @@ class Post:
         for r in rl.getKeys():
             self.regionLikelihoods[r]=0
         timeme("init regionLikelihoods")
+        header=""
+        outrows=[]
         for ngram in post_ngrams:
+            header+=","+ngram
             timeme(ngram)
             for r in rl.getKeys():
                 timeme("  likelihood for r " + str(r))
-                self.regionLikelihoods[r]=self.regionLikelihoods[r]+self.__estLikelihood__(ngram,rl.get(r),n)
+                tmp=self.__estLikelihood__(ngram,rl.get(r),n)
+                if debug_mode:
+                  outrows.append(r+","+str(tmp))
+                self.regionLikelihoods[r]=self.regionLikelihoods[r]+tmp
                 timeme("  post likelihood")
         timeme("done ngrams")
+        if debug_mode:
+           outfile=open(self.id+"_dbg.csv")
+           outfile.write(header+"\n")
+           for i in range(len(outrows)):
+             outfile.write(outrows[i]+"\n")
+           outfile.close()
+
         if not self.testMode:
             for rn in self.regionLikelihoods.keys():
                 c.execute("insert into post_region (p_id, r_id, likelihood) values (%s,%s,%s)",(self.id, rn,self.regionLikelihoods[rn]));
