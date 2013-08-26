@@ -44,6 +44,8 @@ class Post:
         try:
             timeme("  get")
             likelihood=region.getLikelihood(ngram, self.k_group)
+            if likelihood==0:
+               raise AttributeError
             timeme("  got")
         except AttributeError:
             if words == 1:
@@ -75,7 +77,7 @@ class Post:
             self.regionLikelihoods[r]=0
         timeme("init regionLikelihoods")
         header=""
-        outrows=[]
+        outrows={}
         for ngram in post_ngrams:
             header+=","+ngram
             timeme(ngram)
@@ -83,15 +85,18 @@ class Post:
                 timeme("  likelihood for r " + str(r))
                 tmp=self.__estLikelihood__(ngram,rl.get(r),n)
                 if debug_mode:
-                  outrows.append(r+","+str(tmp))
+                  try:
+                    outrows[r]+=","+str(tmp)
+                  except KeyError:
+                     outrows[r]=str(tmp)
                 self.regionLikelihoods[r]=self.regionLikelihoods[r]+tmp
                 timeme("  post likelihood")
         timeme("done ngrams")
         if debug_mode:
-           outfile=open(self.id+"_dbg.csv")
+           outfile=open(self.id[self.id.rfind("/")+1:]+"_dbg.csv","w")
            outfile.write(header+"\n")
-           for i in range(len(outrows)):
-             outfile.write(outrows[i]+"\n")
+           for r in outrows.keys():
+             outfile.write(r+","+outrows[r]+"\n")
            outfile.close()
 
         if not self.testMode:
