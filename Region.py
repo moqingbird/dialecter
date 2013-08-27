@@ -154,17 +154,18 @@ class Region:
 
     def getLikelihood(self,ngram,k):
       try:
+        return_val=0
         if self.use_cache:
            n=self.cache.get_value(self, RegionNgramCache.NGRAM, ngram)
         else:
           n=self.ngrams.get(ngram)
         if n!=None:
           if k==None:
-            return n.total_likelihood
-          return n.likelihoods[k]
+            return_val=n.total_likelihood
+          return_val=n.likelihoods[k]
         else:
-          raise AttributeError
-          return 0
+          return_val=0
+        return return_val
       except IndexError:
         print >> sys.stderr, "r: "+self.id+", ngram: " + ngram+ ", k: "+str(k)
         raise
