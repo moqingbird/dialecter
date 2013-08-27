@@ -11,13 +11,20 @@ from xml.dom import minidom
 from BeautifulSoup import BeautifulSoup
 from PubGroup import PubGroup
 from Author import Author
+from crawl_functions import *
 
 pubgroups={}
 
 class PubUrlOpener(urllib.FancyURLopener):
-   version="MoqBot;mailto:cdg.msc@gmail.com" 
+    version="MoqBot;mailto:cdg.msc@gmail.com" 
 
+    def __init__(self,username,password):
+        self.username=username
+        self.password=password
+        urllib.FancyURLopener.__init__(self)
 
+    def prompt_user_passwd(self,host,realm):
+        return(self.username,self.password)
 
 class TextItem:
 
@@ -32,7 +39,7 @@ class PubCrawler:
     
     htmlCodes = { '&amp;':'&','&lt;':'<', '&gt;':'>','&quot;':'"', '&#39;':"'"}
 
-    def __init__(self,id,region,url,pubgroup,dbconnection):
+    def __init__(self,id,region,url,pubgroup,dbconnection,batch,crawl_fn):
         self.id=id
         self.region=region
         self.baseurl=url
@@ -46,55 +53,36 @@ class PubCrawler:
         self.timeformat="%a, %d %b %Y %H:%M:%S"
         self.exit=False 
         self.connection=dbconnection
+        self.batch=batch
+        self.crawl_fn=crawl_fn
+        self.username=None
+        self.password=None
         #dbconnection=MongoClient('cdgmongoserver.chickenkiller.com',27017)   
         db=dbconnection.dialect_db
         tmp=db.posts.find({"publication":id})
         for t in tmp:
             self.textitems[t["_id"]]=(TextItem(self.id,t["_id"],"","",True))
 
+    def set_auth(self,username,password):
+        self.username=username
+        self.password=password
+
     def crawl(self,url,level):
         if self.pubgroup.allowed(url):
             print(url)
             while self.pubgroup.lastcrawl + self.pubgroup.crawldelay > datetime.now():
                 None
-            opener=PubUrlOpener()
+            opener=PubUrlOpener(self.username,self.password)
             self.pubgroup.setLastCrawl(datetime.now())
-            fullUrl=url
+            self.newUrl=""
             try:
-                pagedoc=BeautifulSoup(''.join(opener.open(fullUrl).read()))
-                items=pagedoc.findAll("item")
-                pubDate=self.maxdate
-                lastLink=""
-                if len(items) == 0:
-                    self.exit=True
-                for item in items:
-                    link=unicode(item.findAll("guid")[0].contents[0]).strip("/")
-                    try:
-                        pubDate=item.findAll("pubdate")[0].string
-                        pubDate=datetime.strptime(pubDate[0:len(pubDate)-6],self.timeformat)
-                        lastLink=link[link.find("comments/")+9:link.find("/",link.find("comments/")+9)]
-                        if not url.upper().startswith(link.upper()):
-                          self.crawl(link+"/.rss?sort=new",level+1)
-                    except IndexError:
-                        title=str(item.findAll("title")[0].contents[0])
-                        author=title[0:title.find(" on ")].strip()
-                        if not self.pubgroup.authors.has_key(author):
-                            self.pubgroup.authors[author]=Author(author,False,None,None,None,None)
-                        content=str(item.findAll("description")[0].contents[0])
-                        content=content.replace('&amp;','&').replace('&lt;','<').replace('&gt;','>').replace('&quot;','"').replace('&#39;',"'");
-                        if self.textitems.has_key(link) and self.textitems.get(link).saved:
-                            self.exit=True
-                        if not self.textitems.has_key(link):
-                            self.textitems[link]=(TextItem(id,link,author,content,False))
-                            self.articles=self.articles+1
+                pagedoc=BeautifulSoup(''.join(opener.open(url).read()))
+                self.crawl_fn(url,pagedoc,level,self)
             except UnicodeError:
-                print ("Unicode error on " + fullUrl)  
+                print ("Unicode error on " + url)  
         if level==0:
-            if self.articles < self.maxarticles and lastLink != "":
-                newUrl=url
-                if newUrl.find("&after=t3") >= 0:
-                    newUrl=newUrl[0:newUrl.find("&after")]
-                self.crawl(newUrl+"&after=t3_"+lastLink,level)
+            if self.articles < self.maxarticles and self.newUrl != "":
+                self.crawl(self.newUrl, level)
 
     def save(self):        
         #connection = MongoClient('cdgmongoserver.chickenkiller.com',27017)
@@ -107,7 +95,15 @@ class PubCrawler:
             for key in self.textitems:
                 numItems=len(self.textitems)
                 if not self.textitems[key].saved:
-                    db.posts.save({"_id":self.textitems[key].id,"region_pub":self.id,"author":self.textitems[key].author,"content":self.textitems[key].content})
+                    if self.id != None:
+                        region_pub=self.id
+                    else:
+                        region_pub=None
+                    db.posts.save({"_id":self.textitems[key].id,
+                                   "region_pub":region_pub,
+                                   "author":self.textitems[key].author,
+                                   "batch":self.batch,
+                                   "content":self.textitems[key].content})
         except: 
                 e = sys.exc_info()[1]
                 print( "Error: %s" % e )
@@ -127,7 +123,7 @@ def main() :
         regionPubCur=db.region_pubs.find({"publication":pub["_id"]})
         for regionPub in regionPubCur:
             print("rpub: "+regionPub["_id"])
-            pubcrawler = PubCrawler(regionPub["_id"], regionPub["region"], regionPub["_id"], pubgroups[pub["_id"]], connection)
+            pubcrawler = PubCrawler(regionPub["_id"], regionPub["region"], regionPub["_id"], pubgroups[pub["_id"]], connection,"TRAIN",reddit_region_crawler)
             url=pub["url"]+regionPub["_id"]+"/.rss?sort=new"
             pubcrawler.crawl(url,0)
             pubcrawler.save()
