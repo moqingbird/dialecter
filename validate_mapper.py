@@ -10,6 +10,7 @@ sys.path.append(".")
 from pymongo_hadoop import BSONMapper
 from pymongo import MongoClient
 from RegionList import RegionList
+from Region import Region
 from Post import Post
 
 def mapper(documents):
@@ -42,8 +43,8 @@ def mapper(documents):
              print >> sys.stderr, doc["_id"]
              raise
            print >> sys.stderr, str(datetime.now())
-           if post.maxRegion != post.regionId:
-              db.wrong.save({"_id": post.id, "actual_region": post.regionId, "predicted_region": post.maxRegion})
+           if post.maxRegion != rl.get(post.regionId).calcParent:
+              db.wrong.save({"_id": post.id, "actual_region": rl.get(post.regionId).calcParent, "predicted_region": post.maxRegion})
            yield {'_id': {'k_group': doc["k_group"],
                           'region': post.regionId},
                  'max_region':post.maxRegion}
