@@ -8,7 +8,11 @@ db.parameters.save({"name":"k", "value":10})
 publications={}
 
 publications[1]={"_id":"REDDIT","name":"Reddit","url":"http://www.reddit.com","read_robots":False}
-db.publications.save(publications[1])
+publications[2]={"_id":"DECTE","name":"The Diachronic Electronic Corpus of Tyneside English", "url":"http://research.ncl.ac.uk/decte/corpusfiles/dectefiles.htm", "read_robots":False}
+publications[3]={"_id":"TWITTER","name":"Twitter", "url":None, "read_robots": False}
+
+for i in publications:
+    db.publications.save(publications[i])
 
 regions={}
 regions[1]={"_id":"BRI","name":"British Isles"}
@@ -238,7 +242,7 @@ region_pubs[88] = {"_id": "/r/wales", "publication": "REDDIT", "region": "WAL","
 region_pubs[89] = {"_id": "/r/Wigan", "publication": "REDDIT", "region": "WIG","url":"/r/Wigan/new/.rss?sort=new"}
 region_pubs[90] = {"_id": "/r/york", "publication": "REDDIT", "region": "YORK","url":"/r/york/new/.rss?sort=new"}
 region_pubs[91] = {"_id": "/r/Yorkshire", "publication": "REDDIT", "region": "YRK","url":"/r/Yorkshire/new/.rss?sort=new"}
-region_pubs[91] = {"_id": "/r/bournemouth", "publication": "REDDIT", "region": "BRNM","url":"/r/bournemouth/new/.rss?sort=new"}
+region_pubs[92] = {"_id": "/r/bournemouth", "publication": "REDDIT", "region": "BRNM","url":"/r/bournemouth/new/.rss?sort=new"}
 
 for i in region_pubs:
     db.region_pubs.save(region_pubs[i])

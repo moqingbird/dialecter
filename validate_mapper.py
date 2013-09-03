@@ -21,10 +21,15 @@ def mapper(documents):
     n=int(db.parameters.find_one({"name":"n"},{"_id":0,"value":1})["value"])
     k=int(db.parameters.find_one({"name":"k"},{"_id":0,"value":1})["value"])
     rpub_regions={}
-    rpub_cur=db.region_pubs.find({"exclude":False},{"_id":1,"region":1})
-    for rpub in rpub_cur:
-      if rl.regions.has_key(rpub["region"]):
-          rpub_regions[rpub["_id"]]=rpub["region"]
+    for region in rl.regions:
+       children=[region]
+       Region.getChildren(region,children,db)
+       for child in children:
+          #rpub_cur=db.region_pubs.find({"exclude":False},{"_id":1,"region":1})
+          rpub_cur=db.region_pubs.find({"region":child},{"_id":1,"region":1})
+          for rpub in rpub_cur:
+            if rl.regions.has_key(rpub["region"]):
+              rpub_regions[rpub["_id"]]=rpub["region"]
     count=0
     for doc in documents:
         if doc["exclude"]==False and rpub_regions.has_key(doc["region_pub"]):

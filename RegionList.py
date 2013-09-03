@@ -13,7 +13,11 @@ class RegionList:
         regions=[region for region in region_cur]#region_cur[:]
         i=0
         for region in regions:
-           if not check_exclude or region["exclude"]==False:
+           try:
+             exclude=region["exclude"]
+           except KeyError:
+             exclude=False
+           if not check_exclude or exclude==False:
               try:
                   ngram_counts=region["word_counts"]
               except KeyError:

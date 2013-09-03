@@ -18,8 +18,26 @@ class Region:
         self.seq=seq
         self.use_cache=use_cache
         self.cache=None
+        self.calcParent=setCalcParent()
         if use_cache:
           self.cache=RegionNgramCache()
+
+    @staticmethod
+    def __getCalcParent__(db, regionId):
+        region=db.regions.find_one({"_id":regionId})
+        if region["calc_level"]==True:
+           return region["_id"]
+        try:
+          return Region. __getCalcParent__(db,region["parent_id"])
+        except KeyError:
+          return None
+
+    def setCalcParent(self):
+        connection=MongoClient('cdgmongoserver.chickenkiller.com', 27017)
+        db=connection.dialect_db
+        self.calcParent=Region.__getCalcParent__(db,self.id)
+        if self.calcParent==None:
+          self.calcParent=self.id
 
     def populateNgrams(self):        
         connection=MongoClient('cdgmongoserver.chickenkiller.com', 27017)
@@ -78,7 +96,14 @@ class Region:
             print("Zero divide error. region: %s, ngram: %s, words: %d, count: %d, totalCount: %d, k: %d" % (self.id,ngram,words,count,totalCount,k))
             raise
 
-    def calcLikelihoods(self,witholdFraction,witholdSeq,discount):        
+    @staticmethod
+    def getChildren(regionId,regionList,db):
+       regions=db.regions.find({"parent_id":regionId})
+       for region in regions:
+         regionList.append(region["_id"])
+         Region.getChildren(region["_id"],regionList,db)
+
+    def calcLikelihoods(self,witholdFraction,witholdSeq,discount,includeChildren=False):        
         connection=MongoClient('cdgmongoserver.chickenkiller.com', 27017)
         db=connection.dialect_db
         #n=db.parameters.find_one({"name":"n"})["value"]
@@ -87,11 +112,13 @@ class Region:
         self.counts=[0 for i in range(0,self.k)]
         self.total_count=0
         likelihood_defaults=[0 for i in range(0,self.k)]
-        #region_pub_cur=db.region_pubs.find({"region":self.id,"publication":"REDDIT"})    
-        #region_pubs=region_pub_cur[:]
-        #for region_pub in region_pubs:
-        if 1==1:
-            ngram_cur=db.region_ngrams.find({"_id.region":self.id})
+        regions=[]
+        regions.append(self.id)
+        if includeChildren:
+           Region.getChildren(self.id,regions,db)
+        for r in range(len(regions)):
+            print(regions[r])
+            ngram_cur=db.region_ngrams.find({"_id.region":regions[r]})
             ngrams=ngram_cur[:]
             for ngram in ngrams:    
                 if ngram["_id"]["ngram"] in self.ngrams:
@@ -130,15 +157,19 @@ class Region:
                                                           i)) for i in range(0,self.k)]
             self.ngrams[ngram].total_likelihood=math.log(self.discount(self.ngrams[ngram].id, 
                                                                        self.ngrams[ngram].words,
-                                                                       self.ngrams[ngram].
-                                                                       total_count,
+                                                                       self.ngrams[ngram].total_count,
                                                                        self.total_count,
                                                                        discount,
                                                                        None))
             db.region_ngrams.update({"_id": {"region":self.id,
                                              "ngram":ngram}},
                                      {"$set": {"likelihoods":self.ngrams[ngram].likelihoods,
-                                               "total_likelihood":self.ngrams[ngram].total_likelihood}})  
+                                               "total_likelihood":self.ngrams[ngram].total_likelihood,
+                                               "totals":self.ngrams[ngram].counts,
+                                               "grand_total":self.ngrams[ngram].total_count,
+                                               "n":self.ngrams[ngram].words,
+                                               "exclude":False}},
+                                     upsert=True)  
     
     def getSortedKeys(self):
         return self.sortedKeys
