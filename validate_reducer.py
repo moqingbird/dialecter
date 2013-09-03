@@ -23,7 +23,7 @@ def reducer(key, values):
     for v in values:
        #if count < 5:
        #   print >> sys.stderr, str(key["k_group"])+","+key["region"]+", maxregion: "+v["max_region"]+", seq: "+str(rl.get(v["max_region"]).seq)
-       if v["max_region"]=="None":
+       if v["max_region"]!="None":
           _counts = [_counts[i]+1 if i==rl.get(v["max_region"]).seq else _counts[i] for i in range(0,len(rl.regions))]
        else:
            print >> sys.stderr,  str(key["k_group"])+","+key["region"]+", maxregion: "+v["max_region"]

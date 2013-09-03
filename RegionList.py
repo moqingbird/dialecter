@@ -17,7 +17,7 @@ class RegionList:
              exclude=region["exclude"]
            except KeyError:
              exclude=False
-           if not check_exclude or exclude==False:
+           if check_exclude==False or exclude==False:
               try:
                   ngram_counts=region["word_counts"]
               except KeyError:
