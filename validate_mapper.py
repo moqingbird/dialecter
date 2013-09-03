@@ -17,8 +17,10 @@ def mapper(documents):
   try:    
     rl=RegionList()
     rl.populate(False,True,True)
+
     rl2=RegionList()
     rl2.populate(False,False,False)
+
     connection=MongoClient("cdgmongoserver.chickenkiller.com",27017)
     db=connection.dialect_db
     n=int(db.parameters.find_one({"name":"n"},{"_id":0,"value":1})["value"])
@@ -46,7 +48,7 @@ def mapper(documents):
              raise
            print >> sys.stderr, str(datetime.now())
            if post.maxRegion != rl2.get(post.regionId).calcParent:
-              db.wrong.save({"_id": post.id, "actual_region": rl.get(post.regionId).calcParent, "predicted_region": post.maxRegion})
+              db.wrong.save({"_id": post.id, "actual_region": rl2.get(post.regionId).calcParent, "predicted_region": post.maxRegion})
            yield {'_id': {'k_group': doc["k_group"],
                           'region': post.regionId},
                  'max_region':post.maxRegion}

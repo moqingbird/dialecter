@@ -4,7 +4,8 @@ import sys
 from pymongo import MongoClient
 
 class RegionList:
-    regions={}
+    def __init__(self):
+      self.regions={}
 
     def populate(self,get_ngrams,check_exclude=False,use_cache=False):
         connection=MongoClient('cdgmongoserver.chickenkiller.com', 27017)
