@@ -11,7 +11,10 @@ from RegionList import RegionList
 
 def mapper(documents):
   try:
-    delimiter="[[$$$]]"
+    sentence_end="[[$$$]]"
+    question_end="[[???]]"
+    delimiters=[sentence_end,question_end]
+    
     n=3
     k_folds=10
     rl=RegionList()
@@ -29,12 +32,26 @@ def mapper(documents):
             words=doc["clean_text"].strip().split()        
             for i in range(0,len(words)):#-len(delimiter.split())):
                 for j in range(1,n+1):
-                    if i+j > len(words) or (j > 2 and words[i+j-2] == delimiter):
+                    if i+j > len(words) or (j > 2 and words[i+j-2] in delimiters):
                         break # don't span sentence ends
+                    out_words=words[i:i+j]
+                    if out_words[0]==question_end:
+                       out_words[0]=sentence_end
                     yield {'_id': {'region':rpub_regions[doc["region_pub"]],
-                                    'ngram':" ".join(words[i:i+j]),
+                                    'ngram':" ".join(out_words),
                                     'n':j}, 
                             'k_groups': [0 if k==doc["k_group"] else 1 for k in range(0,k_folds)]}
+                    if out_words[0]==sentence_end and j<(n-1):
+                       yield {'_id': {'region':rpub_regions[doc["region_pub"]],
+                                      'ngram':" ".join(sentence_end+out_words),
+                                      'n':j+1},
+                              'k_groups': [0 if k==doc["k_group"] else 1 for k in range(0,k_folds)]}
+                    elif j<(n-1) and words[i+j-1] in delimiters:
+                      yield {'_id': {'region':rpub_regions[doc["region_pub"]],
+                                      'ngram':" ".join(words[i:i+j]+words[i+j-1]),
+                                      'n':j+1},
+                              'k_groups': [0 if k==doc["k_group"] else 1 for k in range(0,k_folds)]}
+
   except:
     print >> sys.stderr, "Unexpected map error " 
     traceback.print_exc()
