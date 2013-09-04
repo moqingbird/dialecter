@@ -18,7 +18,7 @@ class Region:
         self.seq=seq
         self.use_cache=use_cache
         self.cache=None
-        self.calcParent=self.setCalcParent()
+        self.setCalcParent()
         if use_cache:
           self.cache=RegionNgramCache()
 
