@@ -50,7 +50,7 @@ def mapper(documents):
            if post.maxRegion != rl2.get(post.regionId).calcParent:
               db.wrong.save({"_id": post.id, "actual_region": rl2.get(post.regionId).calcParent, "predicted_region": post.maxRegion})
            yield {'_id': {'k_group': doc["k_group"],
-                          'region': post.regionId},
+                          'region': rl2.get(post.regionId).calcParent},
                  'max_region':post.maxRegion}
   except:
     print >> sys.stderr, "Unexpected map error " 
