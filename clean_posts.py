@@ -14,8 +14,10 @@ def __main__(batch,test_split):
   url_token="[[URL]]"
   email="\w+@(\w+.)*\w+"
   email_token="[[EMAIL]]"
-  sentence_end="(\.|:|;|\?|!|<p>|</p>|<br/>|###)+" 
+  sentence_end="(\.|:|;|!|<p>|</p>|<br/>|###)+" 
   sentence_end_token=" [[$$$]]"
+  question_end="(\?)+"
+  question_end_token=" [[???]]"
   square_brackets="[\[\]]"
   other_punctuation="[,\\-\"\(\)\*/]" 
   currency="(\$|£|\?|¥)\\[\\[NUMBER\\]\\]"#"($|£|€|¥)\d+(\.\d*)?"
@@ -60,12 +62,16 @@ def __main__(batch,test_split):
           cleaned=re.sub(emoticon,emoticon_token,cleaned)
           cleaned=re.sub(amp_escape,amp_token,cleaned) # must precent sentence_end otherwise we mis-handle the semicolons in these
           cleaned=re.sub(sentence_end,sentence_end_token,cleaned)
+          cleaned=re.sub(question_end, question_end_token,cleaned)
           cleaned=re.sub(other_punctuation," ",cleaned)
           cleaned=cleaned.replace("\'","") #remove single-quotes separately from other punctuation to avoid inserting spaces for apostrophes
           cleaned=sentence_end_token.lstrip() + " " +cleaned + sentence_end_token
           cleaned=re.sub("(?P<emote>(\s*"+escape(emoticon_token)+")+)","\g<emote>"+sentence_end_token, cleaned)
           cleaned=re.sub("\s+", " ",cleaned).upper()
           cleaned=re.sub("("+escape(sentence_end_token)+")+",sentence_end_token, cleaned)
+          cleaned=re.sub("("+escape(question_end_token)+")+",question_end_token, cleaned)
+          cleaned=re.sub("("+escape(sentence_end_token)+escape(question_end_token)+")+",question_end_token, cleaned)
+          cleaned=re.sub("("+escape(question_end_token)+escape(sentence_end_token)+")+",question_end_token, cleaned)
           word_count=len(re.sub(escape(sentence_end_token),"",cleaned).split())
           if word_count < min_words:
               exclude=True
