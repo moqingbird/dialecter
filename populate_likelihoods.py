@@ -7,7 +7,7 @@ from pymongo import MongoClient
 print("start")
 connection=MongoClient('cdgmongoserver.chickenkiller.com', 27017)
 db=connection.dialect_db
-region_cur=db.regions.find({"calc_level":True})#{"$or":[{"_id":"ABN"},{"_id":"NI"},{"_id":"MANC"},{"_id":"BRIS"}]})
+region_cur=db.regions.find()#{"$or":[{"_id":"ABN"},{"_id":"NI"},{"_id":"MANC"},{"_id":"BRIS"}]})
 regions=[region for region in region_cur]#region_cur[:]
 for region in regions:
        try:
