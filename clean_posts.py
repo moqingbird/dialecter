@@ -10,14 +10,14 @@ def escape (instring):
     return re.sub("(?P<esc>[.\\\*+^?{}\[\]|()\$])","\\ \g<esc>",instring).replace("\\ ","\\")
 
 def __main__(batch,test_split):
-  url="(\\w+://)?(\\w+\\.)+\\w+(/?([!#$&-;=?-\\[\\]_a-z~]|%[0-9a-fA-F]{2}))*"
+  url="(\\w+://)?(((\\w+(\\-\\w+)?\\.){2,}\\w+(\\-\\w+)?)|\\w+(\\-\\w+)?\\.(com|net|org|edu))(/?([!#$&\\-;\\=\\?\\[\\]_a-zA-Z0-9~]|%[0-9a-fA-F]{2}|.[^ ]))*"
   url_token="[[URL]]"
   email="\w+@(\w+.)*\w+"
   email_token="[[EMAIL]]"
   sentence_end="(\.|:|;|!|<p>|</p>|<br/>|###)+" 
-  sentence_end_token=" [[$$$]]"
+  sentence_end_token=" [[$$$]] "
   question_end="(\?)+"
-  question_end_token=" [[???]]"
+  question_end_token=" [[???]] "
   square_brackets="[\[\]]"
   other_punctuation="[,\\-\"\(\)\*/]" 
   currency="(\$|£|\?|¥)\\[\\[NUMBER\\]\\]"#"($|£|€|¥)\d+(\.\d*)?"
@@ -68,10 +68,10 @@ def __main__(batch,test_split):
           cleaned=sentence_end_token.lstrip() + " " +cleaned + sentence_end_token
           cleaned=re.sub("(?P<emote>(\s*"+escape(emoticon_token)+")+)","\g<emote>"+sentence_end_token, cleaned)
           cleaned=re.sub("\s+", " ",cleaned).upper()
-          cleaned=re.sub("("+escape(sentence_end_token)+")+",sentence_end_token, cleaned)
-          cleaned=re.sub("("+escape(question_end_token)+")+",question_end_token, cleaned)
-          cleaned=re.sub("("+escape(sentence_end_token)+escape(question_end_token)+")+",question_end_token, cleaned)
-          cleaned=re.sub("("+escape(question_end_token)+escape(sentence_end_token)+")+",question_end_token, cleaned)
+          cleaned=re.sub("("+escape(sentence_end_token.lstrip())+")+",sentence_end_token.lstrip(), cleaned)
+          cleaned=re.sub("("+escape(question_end_token.lstrip())+")+",question_end_token.lstrip(), cleaned)
+          cleaned=re.sub("("+escape(sentence_end_token.lstrip())+escape(question_end_token.lstrip())+")+",question_end_token.lstrip(), cleaned)
+          cleaned=re.sub("("+escape(question_end_token.lstrip())+escape(sentence_end_token.lstrip())+")+",question_end_token.lstrip(), cleaned)
           word_count=len(re.sub(escape(sentence_end_token),"",cleaned).split())
           if word_count < min_words:
               exclude=True

@@ -193,7 +193,8 @@ class Region:
         if n!=None:
           if k==None:
             return_val=n.total_likelihood
-          return_val=n.likelihoods[k]
+          else:
+            return_val=n.likelihoods[k]
         else:
           return_val=0
         return return_val

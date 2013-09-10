@@ -1,4 +1,5 @@
 import math
+import operator
 import pymongo
 import gc
 from pymongo import MongoClient
@@ -19,8 +20,11 @@ class Post:
         self.content=content
         self.testMode=testMode
         self.regionLikelihoods={}
+        self.sortedRegions=[]
         self.maxRegion=None
+        self.runnerupRegion=None
         self.maxLikelihood=None
+        self.runnerupLikelihood=None
         self.discount=discount
         self.k_group=-1
 
@@ -109,9 +113,13 @@ class Post:
                 #print >> sys.stderr, str(self.maxLikelihood)
                 #print >> sys.stderr, l
                 #print >> sys.stderr, str(self.regionLikelihoods[l])  
-                if self.regionLikelihoods[l] != 0 and (self.maxLikelihood==None or self.regionLikelihoods[l] > self.maxLikelihood):
-                    self.maxLikelihood=self.regionLikelihoods[l]
-                    self.maxRegion=l
-        if self.maxRegion==None:
-            self.maxRegion="None"
-        timeme("maxRegion: "+self.maxRegion)
+                self.sortedRegions=sorted(self.regionLikelihoods.iteritems(), key=operator.itemgetter(1))
+                #if self.regionLikelihoods[l] != 0 and (self.maxLikelihood==None or self.regionLikelihoods[l] > self.maxLikelihood):
+                #    self.maxLikelihood=self.regionLikelihoods[l]
+                #    self.runnerupLikelihood=self.maxLikelihood
+                #    self.runnerupRegion=self.maxRegion
+                #    self.maxRegion=l
+        #if self.maxRegion==None:
+        #    self.maxRegion="None"
+        #    self.runnerupRegion="None"
+        #timeme("maxRegion: "+self.maxRegion)
