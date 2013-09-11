@@ -8,15 +8,18 @@ import traceback
 
 from pymongo_hadoop import BSONMapper
 from pymongo import MongoClient
+from RegionList import RegionList
 
 def mapper(documents):
   try:
+    rl=RegionList()
+    rl.populate(False,True,False)
     connection=MongoClient("cdgmongoserver.chickenkiller.com",27017)
     db=connection.dialect_db
     prev_ngram="empty"
     mean=0
     for doc in documents:
-     if doc["exclude"] == False:
+     if rl.regions.has_key(doc["_id"]["region"]): #doc["exclude"] == False:
       try:
         if doc["_id"]["ngram"] != prev_ngram:
           mean=db.ngram_stats.find_one({"_id": doc["_id"]["ngram"]})["mean"]
