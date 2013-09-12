@@ -21,7 +21,7 @@ def reducer(key, values):
       count+=1
 
     if count < stats["region_count"]:
-       sum_sqr+=(stats["region_count"]-count) * math.log(pow(0-math.exp(stats["mean"]),2))
+       sum_sqr+=(stats["region_count"]-count) * pow(math.log(sys.float_info.min)-stats["mean"],2)
        
     return {"_id":key, 
             "mean": stats["mean"],
