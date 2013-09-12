@@ -16,13 +16,13 @@ def mapper(documents):
      res_len=-1
      for doc in documents:
         if res_len == -1:
-          res_len=len(result["predicted_region"])
-        top=result["predicted_region"][res_len-1][1]
-        second=result["predicted_region"][res_len-2][1]
+          res_len=len(doc["predicted_region"])
+        top=doc["predicted_region"][res_len-1][1]
+        second=doc["predicted_region"][res_len-2][1]
         max_region="UNKNOWN"
         if abs((top-second)/second) >= threshold:
-           max_region=result["predicted_region"][res_len-1][0]
-           yield {"_id":doc["region"],
+           max_region=doc["predicted_region"][res_len-1][0]
+           yield {"_id":doc["actual_region"],
                  "max_region":max_region}
   except:
     print >> sys.stderr, "Unexpected map error "
