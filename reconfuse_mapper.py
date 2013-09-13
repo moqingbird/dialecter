@@ -22,8 +22,8 @@ def mapper(documents):
         max_region="UNKNOWN"
         if abs((top-second)/second) >= threshold:
            max_region=doc["predicted_region"][res_len-1][0]
-           yield {"_id":doc["actual_region"],
-                 "max_region":max_region}
+        yield {"_id":doc["actual_region"],
+               "max_region":max_region}
   except:
     print >> sys.stderr, "Unexpected map error "
     traceback.print_exc()
