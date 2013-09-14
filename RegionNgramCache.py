@@ -2,6 +2,7 @@ import sys
 import memcache
 import pymongo
 import config
+import re
 
 from datetime import datetime
 from memcache import Client
@@ -40,7 +41,8 @@ class RegionNgramCache:
       timeme("get hash")
       server=hash(region.id)%self.server_count
       timeme("get full key")
-      full_key=(region.id+"."+str(type)+"."+key.replace(" ", "-")).encode("utf-8")
+      valid_key=re.sub("[ \t\r\n\x00-\xff]","-",key)
+      full_key=(region.id+"."+str(type)+"."+valid_key).encode("utf-8")
       timeme("get value")
       value=self.servers[server].get(full_key)
       timeme("got value")
