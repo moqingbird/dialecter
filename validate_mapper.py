@@ -46,7 +46,11 @@ def mapper(documents):
        else:
             region=auth_regions[doc["author"]]
 
-       if doc["exclude"]==False and rpub_regions.has_key(region):
+       if doc["exclude"]==False and ([doc["region_pub"] ==None or rpub_regions.has_key([doc["region_pub"])):
+           if doc["region_pub"]!=None:
+              region=rpub_regions[doc["region_pub"]]
+           else:
+              region=auth_regions[doc["author"]]
            post=Post(doc["_id"],region, doc["clean_text"],0.75,True)
            post.set_kgroup(doc["k_group"])
            print >> sys.stderr, str(datetime.now()) + doc["_id"]
