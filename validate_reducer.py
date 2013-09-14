@@ -17,7 +17,6 @@ def reducer(key, values):
     rl.populate(False, True)
     db=MongoConnection().get().dialect_db
     k=int(db.parameters.find_one({"name":"k"},{"_id":0,"value":1})["value"])
-    connection.close()
     _counts  = [0 for i in range(0,len(rl.regions))]
     count=0
     for v in values:

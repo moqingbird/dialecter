@@ -16,7 +16,6 @@ def reducer(key, values):
     rl={"NI":0,"COR":1,"BRIS":2,"CORN":3,"ABN":4,"BRAD":5,"BRGT":6,"BRNM":7,"BRUM":8,"CANT":9,"CAR":10,"DUB":11,"DUND":12,"EDB":13,"ESX":14,"GAL":15,"GLAS":16,"HULL":17,"LEED":18,"LEIC":19,"LINC":20,"LVP":21,"MANC":22,"NEWC":23,"NORW":24,"NTHM":25,"OXF":26,"PORT":27,"YORK":28,"SHEF":29,"SOUTH":30,"STAN":31,"SURY":32,"UNKNOWN":33}
     db=MongoConnection().get().dialect_db
     k=int(db.parameters.find_one({"name":"k"},{"_id":0,"value":1})["value"])
-    connection.close()
     _counts  = [0 for i in range(0,len(rl))]
     count=0
     for v in values:
