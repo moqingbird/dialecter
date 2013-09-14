@@ -41,12 +41,7 @@ def mapper(documents):
       auth_regions[auth["_id"]]=auth["count_classification"]
     count=0
     for doc in documents:
-       if doc["region_pub"]!=None:
-            region=rpub_regions[doc["region_pub"]]
-       else:
-            region=auth_regions[doc["author"]]
-
-       if doc["exclude"]==False and ([doc["region_pub"] ==None or rpub_regions.has_key([doc["region_pub"])):
+       if doc["exclude"]==False and (doc["region_pub"] ==None or rpub_regions.has_key(doc["region_pub"])):
            if doc["region_pub"]!=None:
               region=rpub_regions[doc["region_pub"]]
            else:
