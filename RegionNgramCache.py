@@ -1,6 +1,7 @@
 import sys
 import memcache
 import pymongo
+import config
 
 from datetime import datetime
 from memcache import Client
@@ -20,7 +21,7 @@ class RegionNgramCache:
       self.db=MongoConnection().get().dialect_db
       self.servers=[]
       self.server_count=0
-      server_file=open("memcached_servers.config")
+      server_file=open(config.src_path+"memcached_servers.config")
       for line in server_file:
         if not line.startswith("#"):
            self.servers.append(Client([line]))
