@@ -48,7 +48,7 @@ def mapper(documents):
               region=auth_regions[doc["author"]]
            post=Post(doc["_id"],region, doc["clean_text"],0.75,True)
            post.set_kgroup(doc["k_group"])
-           print >> sys.stderr, str(datetime.now()) + doc["_id"]
+           print >> sys.stderr, str(datetime.now()) + doc["_id"].encode("utf-8")
            try:
              post.calc(db,rl,n)
            except:
