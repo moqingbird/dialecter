@@ -37,7 +37,7 @@ def mapper(documents):
               rpub_regions[rpub["_id"]]=rpub["region"]
     count=0
     for doc in documents:
-        if doc["exclude"]==False and rpub_regions.has_key(doc["region_pub"]):
+        if doc["region_pub"]==None or (doc["exclude"]==False and rpub_regions.has_key(doc["region_pub"])):
            post=Post(doc["_id"],rpub_regions[doc["region_pub"]], doc["clean_text"],0.75,True)
            post.set_kgroup(doc["k_group"])
            print >> sys.stderr, str(datetime.now()) + doc["_id"]
