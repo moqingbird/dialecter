@@ -36,17 +36,18 @@ def mapper(documents):
                     out_words=words[i:i+j]
                     if out_words[0]==question_end:
                        out_words[0]=sentence_end
-                    yield {'_id': {'region':rpub_regions[doc["region_pub"]],
+                    if len(" ".join(out_words)) <= 240:
+                      yield {'_id': {'region':rpub_regions[doc["region_pub"]],
                                     'ngram':" ".join(out_words),
                                     'n':j}, 
                             'k_groups': [0 if k==doc["k_group"] else 1 for k in range(0,k_folds)]}
-                    if out_words[0]==sentence_end and j<n:
-                       #pad sentence starts with the delimiter token
-                       #in theory this needs to loop up to n, this is hardcoded for n=3 for simplicity
-                       yield {'_id': {'region':rpub_regions[doc["region_pub"]],
-                                      'ngram':sentence_end+" "+" ".join(out_words),
-                                      'n':j+1},
-                              'k_groups': [0 if k==doc["k_group"] else 1 for k in range(0,k_folds)]}
+                      if out_words[0]==sentence_end and j<n:
+                          #pad sentence starts with the delimiter token
+                          #in theory this needs to loop up to n, this is hardcoded for n=3 for simplicity
+                          yield {'_id': {'region':rpub_regions[doc["region_pub"]],
+                                         'ngram':sentence_end+" "+" ".join(out_words),
+                                         'n':j+1},
+                                 'k_groups': [0 if k==doc["k_group"] else 1 for k in range(0,k_folds)]}
 
   except:
     print >> sys.stderr, "Unexpected map error " 
