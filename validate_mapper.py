@@ -38,7 +38,7 @@ def mapper(documents):
     auth_regions={}
     auth_cur=db.authors.find({"count_classification":{"$exists":1}})
     for auth in auth_cur:
-      auth_regions[auth["_id"]]=auth_regions[auth["count_classification"]]
+      auth_regions[auth["_id"]]=auth["count_classification"]
     count=0
     for doc in documents:
         if doc["region_pub"]==None or (doc["exclude"]==False and rpub_regions.has_key(doc["region_pub"])):
