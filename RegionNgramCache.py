@@ -6,6 +6,7 @@ from datetime import datetime
 from memcache import Client
 from pymongo import MongoClient
 from NGram import NGram
+from MongoConnection import MongoConnection
 
 def timeme(msg):
     None
@@ -16,11 +17,10 @@ class RegionNgramCache:
    STARTS_WITH=2
 
    def __init__(self):
-      conn=MongoClient("cdgmongoserver.chickenkiller.com", 27017)
-      self.db=conn.dialect_db
+      self.db=MongoConnection().get().dialect_db
       self.servers=[]
       self.server_count=0
-      server_file=open("/home/ubuntu/dev/dialecter/memcached_servers.config")
+      server_file=open("memcached_servers.config")
       for line in server_file:
         if not line.startswith("#"):
            self.servers.append(Client([line]))

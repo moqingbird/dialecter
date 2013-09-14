@@ -1,6 +1,6 @@
 from pymongo import MongoClient
+from MongoConnection import MongoConnection
 import sys
 
-conn=MongoClient("cdgmongoserver.chickenkiller.com", 27017)
-db=conn.dialect_db
+db=MongoConnection().get().dialect_db
 db.parameters.update({"name":"classification_threshold"}, {"$set":{"value" :float(sys.argv[1])/100}})

@@ -4,13 +4,13 @@ from pymongo import MongoClient
 from Region import Region
 from RegionList import RegionList
 from Post import Post
+from MongoConnection import MongoConnection
 
 rl=RegionList()
 rl.populate(False,True,True)
 rl2=RegionList()
 rl2.populate(False,False,False)
-connection=MongoClient("cdgmongoserver.chickenkiller.com",27017)
-db=connection.dialect_db
+db=MongoConnection().get().dialect_db
 n=int(db.parameters.find_one({"name":"n"},{"_id":0,"value":1})["value"])
 k=int(db.parameters.find_one({"name":"k"},{"_id":0,"value":1})["value"])
 rpub_regions={}

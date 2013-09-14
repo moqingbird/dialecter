@@ -8,6 +8,7 @@ sys.path.append(".")
 from pymongo import MongoClient
 from pymongo_hadoop import BSONMapper
 from RegionList import RegionList
+from MongoConnection import MongoConnection
 
 def mapper(documents):
   try:
@@ -19,14 +20,12 @@ def mapper(documents):
     k_folds=10
     rl=RegionList()
     rl.populate(False)
-    connection=MongoClient("cdgmongoserver.chickenkiller.com",27017)
-    db=connection.dialect_db
+    db=MongoConnection().get().dialect_db
     rpub_regions={}
     rpub_cur=db.region_pubs.find({},{"_id":1,"region":1})
     for rpub in rpub_cur:
       if rl.regions.has_key(rpub["region"]):
           rpub_regions[rpub["_id"]]=rpub["region"]
-    connection.close()
     for doc in documents:
         if not doc["exclude"]:
             words=doc["clean_text"].strip().split()        

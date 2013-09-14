@@ -4,6 +4,7 @@ import sys
 from NGram import NGram
 from pymongo import MongoClient
 from RegionNgramCache import RegionNgramCache
+from MongoConnection import MongoConnection
 
 class Region:
     def __init__(self,id,name,counts,total_count,seq=0, use_cache=False):
@@ -33,15 +34,13 @@ class Region:
           return None
 
     def setCalcParent(self):
-        connection=MongoClient('cdgmongoserver.chickenkiller.com', 27017)
-        db=connection.dialect_db
+        db=MongoConnection().get().dialect_db
         self.calcParent=Region.__getCalcParent__(db,self.id)
         if self.calcParent==None:
           self.calcParent=self.id
 
     def populateNgrams(self):        
-        connection=MongoClient('cdgmongoserver.chickenkiller.com', 27017)
-        db=connection.dialect_db
+        db=MongoConnection().get().dialect_db
         ngram_cur=db.region_ngrams.find({"_id.region":self.id},timeout=False)
         ngrams=[ngram for ngram in ngram_cur]
         for ngram in ngrams:
@@ -104,8 +103,7 @@ class Region:
          Region.getChildren(region["_id"],regionList,db)
 
     def calcLikelihoods(self,witholdFraction,witholdSeq,discount,includeChildren=False):        
-        connection=MongoClient('cdgmongoserver.chickenkiller.com', 27017)
-        db=connection.dialect_db
+        db=MongoConnection().get().dialect_db
         #n=db.parameters.find_one({"name":"n"})["value"]
         self.ngrams={}
         self.startsWith={}

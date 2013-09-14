@@ -12,6 +12,7 @@ from pymongo import MongoClient
 from RegionList import RegionList
 from Region import Region
 from Post import Post
+from MongoConnection import MongoConnection
 
 def mapper(documents):
   try:    
@@ -21,8 +22,7 @@ def mapper(documents):
     rl2=RegionList()
     rl2.populate(False,False,False)
 
-    connection=MongoClient("cdgmongoserver.chickenkiller.com",27017)
-    db=connection.dialect_db
+    db=MongoConnection().get().dialect_db
     n=int(db.parameters.find_one({"name":"n"},{"_id":0,"value":1})["value"])
     k=int(db.parameters.find_one({"name":"k"},{"_id":0,"value":1})["value"])
     rpub_regions={}

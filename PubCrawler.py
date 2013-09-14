@@ -11,6 +11,7 @@ from xml.dom import minidom
 from BeautifulSoup import BeautifulSoup
 from PubGroup import PubGroup
 from Author import Author
+from MongoConnection import MongoConnection
 from crawl_functions import *
 
 pubgroups={}
@@ -39,7 +40,7 @@ class PubCrawler:
     
     htmlCodes = { '&amp;':'&','&lt;':'<', '&gt;':'>','&quot;':'"', '&#39;':"'"}
 
-    def __init__(self,id,region,url,pubgroup,dbconnection,batch,crawl_fn):
+    def __init__(self,id,region,url,pubgroup,db,batch,crawl_fn):
         self.id=id
         self.region=region
         self.baseurl=url
@@ -52,13 +53,11 @@ class PubCrawler:
         self.articles=0   
         self.timeformat="%a, %d %b %Y %H:%M:%S"
         self.exit=False 
-        self.connection=dbconnection
+        self.db=db
         self.batch=batch
         self.crawl_fn=crawl_fn
         self.username=None
         self.password=None
-        #dbconnection=MongoClient('cdgmongoserver.chickenkiller.com',27017)   
-        db=dbconnection.dialect_db
         tmp=db.posts.find({"publication":id})
         for t in tmp:
             self.textitems[t["_id"]]=(TextItem(self.id,t["_id"],"","",True))
@@ -85,11 +84,9 @@ class PubCrawler:
                 self.crawl(self.newUrl, level)
 
     def save(self):        
-        #connection = MongoClient('cdgmongoserver.chickenkiller.com',27017)
-        db=self.connection.dialect_db
         for k in self.pubgroup.authors.iterkeys():
             if not self.pubgroup.authors[k].saved:
-                db.authors.save({"_id":k,"pubgroup":self.pubgroup.id})
+                self.db.authors.save({"_id":k,"pubgroup":self.pubgroup.id})
                 self.pubgroup.authors[k].saved=True
         try:
             for key in self.textitems:
@@ -112,18 +109,17 @@ class PubCrawler:
                 print(textitem.content[0:220])
 
 def main() :
-    connection=MongoClient('cdgmongoserver.chickenkiller.com',27017);
-    db=connection.dialect_db
+    db=MongoConnection().get().dialect_db
     cursor=db.publications.find()
     pubCur=cursor[:]
     for pub in pubCur:
-        pubgroups[pub["_id"]] = PubGroup(pub["_id"],pub["name"],pub["url"],1000,connection)
+        pubgroups[pub["_id"]] = PubGroup(pub["_id"],pub["name"],pub["url"],1000,db)
         if pub["read_robots"]:
             pubgroups[pub["_id"]].readrobots()
         regionPubCur=db.region_pubs.find({"publication":pub["_id"]})
         for regionPub in regionPubCur:
             print("rpub: "+regionPub["_id"])
-            pubcrawler = PubCrawler(regionPub["_id"], regionPub["region"], regionPub["_id"], pubgroups[pub["_id"]], connection,"TRAIN",reddit_region_crawler)
+            pubcrawler = PubCrawler(regionPub["_id"], regionPub["region"], regionPub["_id"], pubgroups[pub["_id"]], db,"TRAIN",reddit_region_crawler)
             url=pub["url"]+regionPub["_id"]+"/.rss?sort=new"
             pubcrawler.crawl(url,0)
             pubcrawler.save()

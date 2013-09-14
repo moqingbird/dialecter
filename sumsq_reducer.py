@@ -8,11 +8,11 @@ import pymongo
 sys.path.append(".")
 from pymongo_hadoop import BSONReducer
 from pymongo import MongoClient
+from MongoConnection import MongoConnection
 
 def reducer(key, values):
   try:
-    connection=MongoClient("cdgmongoserver.chickenkiller.com",27017)
-    db=connection.dialect_db
+    db=MongoConnection().get().dialect_db
     stats=db.ngram_stats.find_one({"_id":key})
     sum_sqr=0
     count=0

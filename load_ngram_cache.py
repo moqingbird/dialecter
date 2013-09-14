@@ -4,10 +4,10 @@ from Region import Region
 from RegionList import RegionList
 import RegionNgramCache
 from RegionNgramCache import RegionNgramCache
+from MongoConnection import MongoConnection
 
-connection=MongoClient("cdgmongoserver.chickenkiller.com",27017)
-db=connection.dialect_db
-region_cur=db.regions.find({"exclude":False})
+db=MongoConnection().get().dialect_db
+region_cur=db.regions.find()
 regions=[region for region in region_cur]
 region_cur.close()
 cache=RegionNgramCache()

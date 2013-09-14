@@ -2,14 +2,14 @@ from Region import Region
 import pymongo
 import sys
 from pymongo import MongoClient
+from MongoConnection import MongoConnection
 
 class RegionList:
     def __init__(self):
       self.regions={}
 
     def populate(self,get_ngrams,check_exclude=False,use_cache=False):
-        connection=MongoClient('cdgmongoserver.chickenkiller.com', 27017)
-        db=connection.dialect_db
+        db=MongoConnection().get().dialect_db
         region_cur=db.regions.find()#{"$or":[{"_id":"ABN"},{"_id":"NI"},{"_id":"MANC"},{"_id":"BRIS"}]})
         regions=[region for region in region_cur]#region_cur[:]
         i=0

@@ -3,10 +3,10 @@ import pymongo
 import math
 from Region import Region
 from pymongo import MongoClient
+from MongoConnection import MongoConnection
 
 print("start")
-connection=MongoClient('cdgmongoserver.chickenkiller.com', 27017)
-db=connection.dialect_db
+db=MongoConnection().get().dialect_db
 region_cur=db.regions.find()#{"$or":[{"_id":"ABN"},{"_id":"NI"},{"_id":"MANC"},{"_id":"BRIS"}]})
 regions=[region for region in region_cur]#region_cur[:]
 for region in regions:

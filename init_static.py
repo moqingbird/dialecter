@@ -1,10 +1,11 @@
 import pymongo
 from pymongo import MongoClient
+from MongoConnection import MongoConnection
 
-connection=MongoClient('cdgmongoserver.chickenkiller.com',27017);
-db=connection.dialect_db
+db=MongoConnection().get().dialect_db
 db.parameters.save({"name":"n", "value":3})
 db.parameters.save({"name":"k", "value":10})
+db.parameters.save({"classification_threshold","value":0})
 publications={}
 
 publications[1]={"_id":"REDDIT","name":"Reddit","url":"http://www.reddit.com","read_robots":False}

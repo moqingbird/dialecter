@@ -5,6 +5,7 @@ import codecs
 import re
 import random
 from pymongo import MongoClient
+from MongoConnection import MongoConnection
 
 def escape (instring):
     return re.sub("(?P<esc>[.\\\*+^?{}\[\]|()\$])","\\ \g<esc>",instring).replace("\\ ","\\")
@@ -38,8 +39,7 @@ def __main__(batch,test_split):
       icon=re.sub("(?P<esc>[.\\\*+^?{}\[\]|()])","\\ \g<esc>",line.replace("\r\n","").strip())
       emoticon+=icon+"|"
   emoticon="[^\w]?("+emoticon.rstrip("|").replace("\\ ","\\")+")"
-  connection=MongoClient('cdgmongoserver.chickenkiller.com',27017)
-  db=connection.dialect_db
+  db=MongoConnection().get().dialect_db
   if batch != None:
     cursor=db.posts.find({"batch":batch})
   else:

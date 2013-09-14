@@ -9,13 +9,13 @@ import traceback
 from pymongo_hadoop import BSONMapper
 from pymongo import MongoClient
 from RegionList import RegionList
+from MongoConnection import MongoConnection
 
 def mapper(documents):
   try:
     rl=RegionList()
     rl.populate(False,True,False)
-    connection=MongoClient("cdgmongoserver.chickenkiller.com",27017)
-    db=connection.dialect_db
+    db=MongoConnection().get().dialect_db
     prev_ngram="empty"
     mean=0
     for doc in documents:

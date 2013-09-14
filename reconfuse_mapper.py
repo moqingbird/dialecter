@@ -7,11 +7,11 @@ sys.path.append(".")
 
 from pymongo_hadoop import BSONMapper
 from pymongo import MongoClient
+from MongoConnection import MongoConnection
 
 def mapper(documents):
   try:
-     connection=MongoClient("cdgmongoserver.chickenkiller.com",27017)
-     db=connection.dialect_db
+     db=MongoConnection().get().dialect_db
      threshold=float(db.parameters.find_one({"name":"classification_threshold"},{"_id":0,"value":1})["value"])
      res_len=-1
      for doc in documents:
