@@ -3,10 +3,10 @@ from PubGroup import PubGroup
 from pymongo import MongoClient
 
 from RegionList import RegionList
+from MongoConnection import MongoConnection
 from crawl_functions import *
 
-connection=MongoClient('cdgmongoserver.chickenkiller.com',27017);
-db=connection.dialect_db
+db=MongoConnection().get().dialect_db
 pub=db.publications.find_one({"_id":"REDDIT"})
 pubgroup = PubGroup(pub["_id"],pub["name"],pub["url"],200,connection)
 pubgroup.loadAuthors()
