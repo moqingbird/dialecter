@@ -25,7 +25,12 @@ for region in rl.regions:
 		#if rl.regions.has_key(rpub["region"]):
 		  rpub_regions[rpub["_id"]]=rpub["region"]
 doc=db.posts.find_one({"_id":sys.argv[1]})
-post=Post(doc["_id"],rpub_regions[doc["region_pub"]], doc["clean_text"],0.75,True)
+if doc.has_key("region_pub") and doc["region_pub"] != None:
+  print(doc["region_pub"])
+  region=rpub_regions[doc["region_pub"]]
+else:
+  region=db.authors.find_one({"_id":doc["author"]})["count_classification"]
+post=Post(doc["_id"],region, doc["clean_text"],0.75,True)
 post.set_kgroup(doc["k_group"])
 print >> sys.stderr, str(datetime.now()) + doc["_id"]
 post.calc(db,rl,n,True)

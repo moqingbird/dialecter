@@ -36,7 +36,7 @@ def mapper(documents):
                     out_words=words[i:i+j]
                     if out_words[0]==question_end:
                        out_words[0]=sentence_end
-                    if len(" ".join(out_words)) <= 240:
+                    if len((" ".join(out_words)).encode("utf-8")) <= 240:
                       yield {'_id': {'region':rpub_regions[doc["region_pub"]],
                                     'ngram':" ".join(out_words),
                                     'n':j}, 

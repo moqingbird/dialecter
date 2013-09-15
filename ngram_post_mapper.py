@@ -24,7 +24,7 @@ def mapper(documents):
                     out_words=words[i:i+j]
                     if out_words[0]==question_end:
                        out_words[0]=sentence_end
-                    if len(" ".join(out_words)) <= 240:
+                    if len((" ".join(out_words)).encode("utf-8")) <= 240:
                       yield {'_id': {'post': doc["_id"],
                                      'ngram':" ".join(out_words),
                                      'n':j},
