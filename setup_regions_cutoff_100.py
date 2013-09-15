@@ -10,7 +10,17 @@ rpubs=db.region_pubs.find({"$or": [{"_id":"/r/ireland"},{"_id":"/r/scotland"},{"
 for rpub in rpubs:
   res=db.region_pubs.update({"_id":rpub["_id"]},{"$set":{"exclude":True}})
 
-db.regions.update({},{"$set": {"exclude": True}},multi=True)
+db.regions.update({},{"$set": {"exclude": True, "calc_level":False}},multi=True)
 rpub_cur=db.region_pubs.find({"exclude":False})
 for rpub in rpub_cur:
    res=db.regions.update({"_id":rpub["region"]},{"$set":{"exclude":False}})
+
+regions={}
+region_cur=db.regions.find({"exclude":False})
+for region in region_cur:
+   regions[region["_id"]]=1
+region_cur=db.regions.find({"exclude":False})
+for region in region_cur:
+   if not region.has_key("parent_id") or not regions.has_key(region["parent_id"]):
+      res=db.regions.update({"_id":region["_id"]},{"$set":{"calc_level":True}})
+

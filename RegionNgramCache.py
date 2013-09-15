@@ -41,7 +41,7 @@ class RegionNgramCache:
       timeme("get hash")
       server=hash(region.id)%self.server_count
       timeme("get full key")
-      valid_key=re.sub("[ \t\r\n\x00-\xff]","-",key)
+      valid_key=re.sub("[ \t\r\n\x00-\x1f\x7f]","-",key)
       full_key=(region.id+"."+str(type)+"."+valid_key).encode("utf-8")
       timeme("get value")
       value=self.servers[server].get(full_key)

@@ -98,7 +98,7 @@ class Post:
         timeme("done ngrams")
         if debug_mode:
            outfile=open(self.id[self.id.rfind("/")+1:]+"_dbg.csv","w")
-           outfile.write(header+"\n")
+           outfile.write(header.encode("utf-8")+"\n")
            for r in outrows.keys():
              outfile.write(r+","+outrows[r]+"\n")
            outfile.close()

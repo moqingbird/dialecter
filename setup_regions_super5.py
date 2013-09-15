@@ -2,7 +2,7 @@ import pymongo
 from MongoConnection import MongoConnection
 
 db=MongoConnection().get().dialect_db
-db.regions.update({},{"$set":{"exclude":True}},multi=True)
+db.regions.update({},{"$set":{"exclude":True,"calc_level":False}},multi=True)
 db.region_pubs.update({},{"$set":{"exclude":True}},multi=True)
 db.regions.update({"_id": {"$in": ["IRE","SCO","WAL","N_ENG","SO_ENG"]}}, {"$set": {"exclude":False,"calc_level":True}},multi=True)
 regions=db.regions.find({"exclude":False})
