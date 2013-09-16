@@ -46,13 +46,12 @@ def mapper(documents):
       if rl.regions.has_key(rpub["region"]):
           rpub_regions[rpub["_id"]]=rpub["region"]
     valid_authors={}
-    auth_cur=db.authors.find({"pubgroup":"REDDIT","selfClassification": {"$nin": ["unknown","conflict",""]}})
+    auth_cur=db.authors.find({"pubgroup":"REDDIT","selfClassification": {"$nin": ["unknown","conflict","non_uk"]}})
     for auth in auth_cur:
       valid_authors[auth["_id"]]=auth["selfClassification"]
 
     for doc in documents:
-        if not doc["exclude"] and valid_authors.has_key(doc["author"]) and \
-                 valid_authors[doc["author"]]==rpub_regions[doc["region_pub"]]:
+        if not doc["exclude"] and valid_authors.has_key(doc["author"]):
             words=doc["clean_text"].strip().split()        
             for i in range(0,len(words)):
                 for j in range(1,n+1):
@@ -62,14 +61,14 @@ def mapper(documents):
                     if out_words[0]==question_end:
                        out_words[0]=sentence_end
                     if not too_special(out_words) and len((" ".join(out_words)).encode("utf-8")) <= 240:
-                      yield {'_id': {'region':rpub_regions[doc["region_pub"]],
+                      yield {'_id': {'region':valid_authors[doc["author"]],
                                     'ngram':" ".join(out_words),
                                     'n':j}, 
                             'k_groups': [0 if k==doc["k_group"] else 1 for k in range(0,k_folds)]}
                       if out_words[0]==sentence_end and j<n:
                           #pad sentence starts with the delimiter token
                           #in theory this needs to loop up to n, this is hardcoded for n=3 for simplicity
-                          yield {'_id': {'region':rpub_regions[doc["region_pub"]],
+                          yield {'_id': {'region':valid_authors[doc["author"]],
                                          'ngram':sentence_end+" "+" ".join(out_words),
                                          'n':j+1},
                                  'k_groups': [0 if k==doc["k_group"] else 1 for k in range(0,k_folds)]}
