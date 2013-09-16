@@ -38,7 +38,8 @@ def mapper(documents):
     valid_authors={}
     auth_cur=db.authors.find({"pubgroup":"REDDIT","selfClassification": {"$nin": ["unknown","conflict",""]}})
     for auth in auth_cur:
-      valid_authors[auth["_id"]]=auth["selfClassification"]
+      if rl.regions.has_key(auth["selfClassification"]):
+         valid_authors[auth["_id"]]=auth["selfClassification"]
     count=0
     for doc in documents:
        if doc["exclude"]==False and  valid_authors.has_key(doc["author"]):
