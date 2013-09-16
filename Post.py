@@ -2,6 +2,7 @@ import math
 import operator
 import pymongo
 import gc
+import re
 from pymongo import MongoClient
 from datetime import datetime
 
