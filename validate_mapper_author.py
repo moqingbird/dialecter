@@ -57,7 +57,7 @@ def mapper(documents):
                             "actual_region": valid_authors[doc["author"]],
                             "predicted_region": post.sortedRegions})
            yield {'_id': {'k_group': doc["k_group"],
-                          'region': rl2.get(post.regionId).calcParent},
+                          'region': valid_authors[doc["author"]],
                  'max_region':post.sortedRegions[len(post.sortedRegions)-1][0]}
   except:
     print >> sys.stderr, "Unexpected map error " 
