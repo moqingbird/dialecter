@@ -29,15 +29,13 @@ class Post:
         self.k_group=-1
 
 
-    @staticmethod
-    def __is_special__(word):
+    def __is_special__(self, word):
       if word != sentence_end and word != question_end and re.match("\\[\\[.*\\]\\]",word):
          return True
       return False
 
-    @staticmethod
-    def __too_special__(w):
-      if __is_special__(w[0]):
+    def __too_special__(self, w):
+      if self.__is_special__(w[0]):
         return True
       count_special=0
       for i in range(1,len(w)):
@@ -102,7 +100,7 @@ class Post:
         header=""
         outrows={}
         for ngram in post_ngrams:
-          if not __too_special__(ngram.split()):
+          if not self.__too_special__(ngram.split()):
             header+=","+ngram
             timeme(ngram)
             for r in rl.getKeys():
