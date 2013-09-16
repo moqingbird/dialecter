@@ -41,9 +41,8 @@ def mapper(documents):
       valid_authors[auth["_id"]]=auth["selfClassification"]
     count=0
     for doc in documents:
-       if doc["exclude"]==False and  valid_authors.has_key(doc["author"]) and \
-                 valid_authors[doc["author"]]==rpub_regions[doc["region_pub"]]:
-           post=Post(doc["_id"],rpub_regions[doc["region_pub"]], doc["clean_text"],0.75,True)
+       if doc["exclude"]==False and  valid_authors.has_key(doc["author"]):
+           post=Post(doc["_id"],valid_authors[doc["author"]], doc["clean_text"],0.75,True)
            post.set_kgroup(doc["k_group"])
            print >> sys.stderr, str(datetime.now()) + doc["_id"].encode("utf-8")
            try:
@@ -55,7 +54,7 @@ def mapper(documents):
            #if post.maxRegion != rl2.get(post.regionId).calcParent:
            #   db.wrong.save({"_id": post.id, "actual_region": rl2.get(post.regionId).calcParent, "predicted_region": post.maxRegion})
            db.results.save({"_id": post.id, 
-                            "actual_region": rl2.get(post.regionId).calcParent, 
+                            "actual_region": valid_authors[doc["author"]]
                             "predicted_region": post.sortedRegions})
            yield {'_id': {'k_group': doc["k_group"],
                           'region': rl2.get(post.regionId).calcParent},
