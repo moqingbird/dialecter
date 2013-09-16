@@ -54,7 +54,7 @@ def mapper(documents):
            #if post.maxRegion != rl2.get(post.regionId).calcParent:
            #   db.wrong.save({"_id": post.id, "actual_region": rl2.get(post.regionId).calcParent, "predicted_region": post.maxRegion})
            db.results.save({"_id": post.id, 
-                            "actual_region": valid_authors[doc["author"]]
+                            "actual_region": valid_authors[doc["author"]],
                             "predicted_region": post.sortedRegions})
            yield {'_id': {'k_group': doc["k_group"],
                           'region': rl2.get(post.regionId).calcParent},
