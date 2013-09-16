@@ -37,7 +37,7 @@ class Post:
 
     @staticmethod
     def __too_special__(w):
-      if is_special(w[0]):
+      if __is_special__(w[0]):
         return True
       count_special=0
       for i in range(1,len(w)):
@@ -102,7 +102,7 @@ class Post:
         header=""
         outrows={}
         for ngram in post_ngrams:
-          if not self.__too_special__(ngram.split()):
+          if not __too_special__(ngram.split()):
             header+=","+ngram
             timeme(ngram)
             for r in rl.getKeys():
