@@ -30,7 +30,7 @@ class Post:
 
 
     def __is_special__(self, word):
-      if word != sentence_end and word != question_end and re.match("\\[\\[.*\\]\\]",word):
+      if word != "[[$$$]]"  and word != "[[???]]" and re.match("\\[\\[.*\\]\\]",word):
          return True
       return False
 
