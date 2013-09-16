@@ -40,7 +40,7 @@ class Post:
         return True
       count_special=0
       for i in range(1,len(w)):
-        if is_special(w[i]):
+        if self.__is_special__(w[i]):
            count_special+=1
         if count_special > len(w)/2:
            return True
