@@ -49,5 +49,6 @@ for region in region_authors:
        crawler=PubCrawler.PubCrawler(None,rpub_regions[region["region_pub"]],pubgroup.baseurl,pubgroup,connection,"REDDIT_USER_TEST",reddit_user_crawler)
        authors=region["author_counts"][1:5]
        for author in authors:
+          res=db.authors.update({"_id":author["author"]},{"$set":{"count_classification":rpub_regions[region["region_pub"]]}})
           crawler.crawl(pubgroup.baseurl+"/user/"+author["author"]+".rss?sort=new",0)
           crawler.save()
