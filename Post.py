@@ -29,6 +29,25 @@ class Post:
         self.k_group=-1
 
 
+    @staticmethod
+    def __is_special__(word):
+      if word != sentence_end and word != question_end and re.match("\\[\\[.*\\]\\]",word):
+         return True
+      return False
+
+    @staticmethod
+    def __too_special__(w):
+      if is_special(w[0]):
+        return True
+      count_special=0
+      for i in range(1,len(w)):
+        if is_special(w[i]):
+           count_special+=1
+        if count_special > len(w)/2:
+           return True
+      return False
+
+
     def __calcAlpha__(self,region,prevWords):
         #timeme("sum slice")
         starts_with=region.getStartsWith(prevWords)
@@ -83,6 +102,7 @@ class Post:
         header=""
         outrows={}
         for ngram in post_ngrams:
+          if not self.__too_special__(ngram.split()):
             header+=","+ngram
             timeme(ngram)
             for r in rl.getKeys():
